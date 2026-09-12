@@ -238,7 +238,7 @@ function AiRedesignDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[min(42rem,calc(100vw-2rem))] gap-0 overflow-hidden p-0">
-        <div className="border-b border-[var(--border,#e2e5e9)] px-5 pt-5 pb-4">
+        <div className="admin-dialog-header px-5 pt-5 pb-4">
           <DialogHeader className="mb-0">
             <DialogTitle className="flex items-center gap-2">
               <span className="inline-flex size-7 items-center justify-center rounded-full bg-[var(--ai-weak,#eeebfb)] text-sm">
@@ -253,7 +253,7 @@ function AiRedesignDialog({
           </DialogHeader>
         </div>
 
-        <div className="space-y-4 px-5 py-4">
+        <div className="admin-dialog-body space-y-4 px-5 py-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <ComparisonPanel label="Before · Reported" tone="muted">
               {report.mediaUrl ? (
@@ -277,7 +277,7 @@ function AiRedesignDialog({
                   className="h-52 w-full object-cover"
                 />
               ) : (
-                <div className="flex h-52 flex-col items-center justify-center gap-2 bg-[var(--surface-2,#f8f9fa)] px-4 text-center">
+                <div className="admin-dialog-panel-muted flex h-52 flex-col items-center justify-center gap-2 px-4 text-center">
                   {loading ? (
                     <>
                       <span className="size-8 animate-pulse rounded-full bg-[var(--ai-weak,#eeebfb)]" />
@@ -303,8 +303,8 @@ function AiRedesignDialog({
           ) : null}
 
           {state.status === "done" ? (
-            <div className="rounded-lg border border-[var(--border,#e2e5e9)] bg-[var(--surface-2,#f8f9fa)]">
-              <div className="border-b border-[var(--border,#e2e5e9)] px-4 py-2.5">
+            <div className="admin-dialog-note overflow-hidden rounded-lg">
+              <div className="admin-dialog-header border-b px-4 py-2.5">
                 <p className="text-xs font-semibold tracking-wide text-[var(--muted,#6b7280)] uppercase">
                   Recommended fix
                 </p>
@@ -316,7 +316,7 @@ function AiRedesignDialog({
           ) : null}
         </div>
 
-        <div className="flex flex-col-reverse gap-2 border-t border-[var(--border,#e2e5e9)] bg-[var(--surface-2,#f8f9fa)] px-5 py-4 sm:flex-row sm:justify-end">
+        <div className="admin-dialog-footer flex flex-col-reverse gap-2 px-5 py-4 sm:flex-row sm:justify-end">
           <DialogClose asChild>
             <Button variant="outline" type="button">
               Close
@@ -340,13 +340,10 @@ function ComparisonPanel({
   tone: "muted" | "ai";
   children: ReactNode;
 }) {
-  const labelClass =
-    tone === "ai"
-      ? "bg-[var(--ai-weak,#eeebfb)] text-[var(--ai,#5b4bc4)]"
-      : "bg-[var(--surface-2,#f8f9fa)] text-[var(--muted,#6b7280)]";
+  const labelClass = tone === "ai" ? "admin-dialog-caption-ai" : "admin-dialog-caption-muted";
 
   return (
-    <figure className="overflow-hidden rounded-lg border border-[var(--border,#e2e5e9)] bg-[var(--surface,#ffffff)] shadow-sm">
+    <figure className="admin-dialog-panel overflow-hidden rounded-lg shadow-sm">
       <figcaption
         className={`border-b border-[var(--border,#e2e5e9)] px-3 py-2 text-[11px] font-semibold tracking-wide uppercase ${labelClass}`}
       >
@@ -359,7 +356,7 @@ function ComparisonPanel({
 
 function EmptyPhoto({ label }: { label: string }) {
   return (
-    <div className="flex h-52 items-center justify-center bg-[var(--surface-2,#f8f9fa)] px-4 text-center">
+    <div className="admin-dialog-panel-muted flex h-52 items-center justify-center px-4 text-center">
       <p className="text-sm text-[var(--muted,#6b7280)]">{label}</p>
     </div>
   );

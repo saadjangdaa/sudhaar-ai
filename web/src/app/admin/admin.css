@@ -43,7 +43,60 @@
   the dialog looked like it was floating over live, still-clickable content.
 */
 .admin-overlay {
-  background: rgb(0 0 0 / 0.55);
+  background: rgb(0 0 0 / 0.6);
+  backdrop-filter: blur(4px);
+}
+
+/*
+  Portaled dialogs mount on document.body, outside .admin-shell. Do NOT style
+  them with Tailwind arbitrary bg-[var(--surface)] — Tailwind v4 can drop those
+  at build time. Plain CSS here always resolves :root tokens to opaque colors.
+*/
+.admin-dialog-content {
+  background-color: var(--surface, #ffffff);
+  color: var(--foreground, #1c1c1c);
+  border: 1px solid var(--border, #e2e5e9);
+  box-shadow:
+    0 24px 48px rgb(0 0 0 / 0.18),
+    0 0 0 1px rgb(0 0 0 / 0.04);
+}
+
+.admin-dialog-header {
+  background-color: var(--surface, #ffffff);
+  border-bottom: 1px solid var(--border, #e2e5e9);
+}
+
+.admin-dialog-body {
+  background-color: var(--surface, #ffffff);
+}
+
+.admin-dialog-footer {
+  background-color: var(--surface-2, #f8f9fa);
+  border-top: 1px solid var(--border, #e2e5e9);
+}
+
+.admin-dialog-panel {
+  background-color: var(--surface, #ffffff);
+  border: 1px solid var(--border, #e2e5e9);
+}
+
+.admin-dialog-panel-muted {
+  background-color: var(--surface-2, #f8f9fa);
+}
+
+.admin-dialog-caption-muted {
+  background-color: var(--surface-2, #f8f9fa);
+  color: var(--muted, #6b7280);
+}
+
+.admin-dialog-caption-ai {
+  background-color: var(--ai-weak, #eeebfb);
+  color: var(--ai, #5b4bc4);
+}
+
+.admin-dialog-note {
+  background-color: var(--surface-2, #f8f9fa);
+  border: 1px solid var(--border, #e2e5e9);
 }
 
 .admin-title {
