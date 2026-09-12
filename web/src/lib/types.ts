@@ -61,6 +61,15 @@ export interface ReportResponse {
 }
 
 /** A row of public.reports, as read straight from Supabase by the feed. */
+/** A citizen reply on a complaint. See supabase/migrations/004_comments.sql. */
+export interface CommentRow {
+  id: string;
+  report_id: string;
+  author_name: string;
+  body: string;
+  created_at: string;
+}
+
 export interface ReportRow {
   id: string;
   created_at: string;

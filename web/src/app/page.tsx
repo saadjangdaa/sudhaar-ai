@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import ReportCard from "@/components/ReportCard";
+import { getCommentCounts } from "@/lib/comments";
 import { ISSUE_META } from "@/lib/format";
 import { getReports, SUPABASE_CONFIGURED, type SortKey } from "@/lib/reports";
 
@@ -16,7 +17,12 @@ export default async function FeedPage({ searchParams }: PageProps<"/">) {
   const sort = (params.sort === "new" ? "new" : "top") as SortKey;
   const issueType = typeof params.issue_type === "string" ? params.issue_type : undefined;
 
-  const reports = await getReports({ sort, issue_type: issueType });
+  // Both reads at once: the counts do not depend on which reports came back,
+  // and the feed should not pay two round trips in series for them.
+  const [reports, commentCounts] = await Promise.all([
+    getReports({ sort, issue_type: issueType }),
+    getCommentCounts(),
+  ]);
 
   return (
     <main className="mx-auto grid max-w-5xl gap-6 px-4 py-6 lg:grid-cols-[1fr_300px]">
@@ -74,7 +80,13 @@ export default async function FeedPage({ searchParams }: PageProps<"/">) {
               </Link>
             </p>
           ) : (
-            reports.map((report) => <ReportCard key={report.id} report={report} />)
+            reports.map((report) => (
+              <ReportCard
+                key={report.id}
+                report={report}
+                commentCount={commentCounts.get(report.id)}
+              />
+            ))
           )}
         </div>
       </div>

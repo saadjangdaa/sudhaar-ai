@@ -2,8 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import AiOverview from "@/components/AiOverview";
+import CommentThread from "@/components/CommentThread";
 import VoteBox from "@/components/VoteBox";
 import { areaLabel, ISSUE_META, STATUS_META, timeAgo } from "@/lib/format";
+import { getComments } from "@/lib/comments";
 import { getReport } from "@/lib/reports";
 
 export const dynamic = "force-dynamic";
@@ -12,6 +14,10 @@ export default async function ComplaintPage({ params }: PageProps<"/c/[id]">) {
   const { id } = await params;
   const report = await getReport(id);
   if (!report) notFound();
+
+  // A rejected report is only ever opened by its own submitter, via their link.
+  // It is not public, so there is no neighbourhood thread to show on it.
+  const comments = report.status === "rejected" ? [] : await getComments(report.id);
 
   const meta = report.issue_type ? ISSUE_META[report.issue_type] : null;
   const status = STATUS_META[report.status ?? "pending"];
@@ -124,6 +130,8 @@ export default async function ComplaintPage({ params }: PageProps<"/c/[id]">) {
           )}
         </div>
       </article>
+
+      {!rejected && <CommentThread reportId={report.id} comments={comments} />}
     </main>
   );
 }

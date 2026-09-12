@@ -5,7 +5,7 @@
  * demoable before anyone has wired credentials, and so a dead database during
  * judging degrades to a populated page instead of an empty one.
  */
-import type { ReportRow } from "@/lib/types";
+import type { CommentRow, ReportRow } from "@/lib/types";
 
 const minutesAgo = (m: number) => new Date(Date.now() - m * 60_000).toISOString();
 
@@ -159,5 +159,120 @@ export const DEMO_REPORTS: ReportRow[] = [
     validity_confidence: 0.87,
     rejection_reason: null,
     evidence_quality: "strong",
+  },
+];
+
+/**
+ * Roman Urdu sample threads, mirroring supabase/migrations/004_comments.sql.
+ *
+ * Kept in sync by hand so the feed still shows citizens talking to each other
+ * when Supabase is unreachable — the interaction is the part of the demo most
+ * worth protecting against a dead database.
+ */
+export const DEMO_COMMENTS: CommentRow[] = [
+  {
+    id: "dc-1",
+    report_id: "demo-1",
+    author_name: "Imran Ahmed",
+    body: "Yehi gaddha pichle mahine meri bike ka tyre phaar chuka hai. Raat ko to bilkul nazar nahi aata.",
+    created_at: minutesAgo(2870),
+  },
+  {
+    id: "dc-2",
+    report_id: "demo-1",
+    author_name: "Saima Rizvi",
+    body: "Barish ke baad paani bhar jata hai aur gehrai ka andaza hi nahi hota. Koi nishaan tak nahi lagaya gaya.",
+    created_at: minutesAgo(1640),
+  },
+  {
+    id: "dc-3",
+    report_id: "demo-1",
+    author_name: "Bilal Shaikh",
+    body: "Rickshaw wale bhi yahan se bach kar nikalte hain, isi wajah se saamne wali lane mein jam lag jata hai.",
+    created_at: minutesAgo(720),
+  },
+  {
+    id: "dc-4",
+    report_id: "demo-2",
+    author_name: "Farhan Qureshi",
+    body: "Teen din nahi, poora hafta ho gaya hai. Badbu ki wajah se khidki kholna muhaal hai.",
+    created_at: minutesAgo(3300),
+  },
+  {
+    id: "dc-5",
+    report_id: "demo-2",
+    author_name: "Nusrat Bano",
+    body: "Bachay isi gande paani se guzar kar school jate hain. Do gharon mein pait ki bimari phail chuki hai.",
+    created_at: minutesAgo(2100),
+  },
+  {
+    id: "dc-6",
+    report_id: "demo-2",
+    author_name: "Abdul Rehman",
+    body: "Hum ne teen baar shikayat darj karai, har baar kaha gaya amla aa raha hai. Aaj tak koi nahi aaya.",
+    created_at: minutesAgo(900),
+  },
+  {
+    id: "dc-7",
+    report_id: "demo-3",
+    author_name: "Huma Saleem",
+    body: "Do hafte nahi, mahina hone ko hai. Aawara kuttay raat ko saara kachra gali mein phaila dete hain.",
+    created_at: minutesAgo(4100),
+  },
+  {
+    id: "dc-8",
+    report_id: "demo-3",
+    author_name: "Tariq Mahmood",
+    body: "Garmi mein badbu naqabil-e-bardasht ho jati hai aur machhar boht barh gaye hain.",
+    created_at: minutesAgo(2600),
+  },
+  {
+    id: "dc-9",
+    report_id: "demo-4",
+    author_name: "Zubaida Khatoon",
+    body: "Tanker wale teen hazaar ka tanker aath hazaar mein de rahe hain. Yeh khuli loot hai.",
+    created_at: minutesAgo(3900),
+  },
+  {
+    id: "dc-10",
+    report_id: "demo-4",
+    author_name: "Kashif Anwar",
+    body: "Peer se aik qatra nahi aaya. Peene ka paani bottlon mein khareedna par raha hai.",
+    created_at: minutesAgo(1800),
+  },
+  {
+    id: "dc-11",
+    report_id: "demo-4",
+    author_name: "Nadeem Iqbal",
+    body: "Saath wali gali mein supply chal rahi hai, to masla line ka nahi lagta. Valve check karaya jaye.",
+    created_at: minutesAgo(640),
+  },
+  {
+    id: "dc-12",
+    report_id: "demo-5",
+    author_name: "Rehana Parveen",
+    body: "Footpath par thelay lag jane se paidal chalna namumkin hai. Buzurg aur khawateen sarak par chalne par majboor hain.",
+    created_at: minutesAgo(5200),
+  },
+  {
+    id: "dc-13",
+    report_id: "demo-5",
+    author_name: "Asad Jamal",
+    body: "Pichle saal bhi hataye gaye thay, do din baad sab wapas aa gaye. Mustaqil hal chahiye.",
+    created_at: minutesAgo(2400),
+  },
+  {
+    id: "dc-14",
+    report_id: "demo-6",
+    author_name: "Shahzeb Ali",
+    body: "Raat ko wahan roshni bhi nahi. Khuda na khwasta koi bacha gir gaya to zimmedar kaun hoga?",
+    created_at: minutesAgo(2900),
+  },
+  {
+    id: "dc-15",
+    report_id: "demo-6",
+    author_name: "Maryam Farooqi",
+    body: "Main ne filhal eenten rakh kar nishaan bana diya hai take log bach kar niklein, magar yeh hal nahi.",
+    created_at: minutesAgo(1500),
   },
 ];

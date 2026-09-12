@@ -5,7 +5,19 @@ import VoteBox from "@/components/VoteBox";
 import { areaLabel, ISSUE_META, STATUS_META, timeAgo } from "@/lib/format";
 import type { ReportRow } from "@/lib/types";
 
-export default function ReportCard({ report }: { report: ReportRow }) {
+/**
+ * `commentCount` is passed down from the feed's single grouped read rather than
+ * fetched here — see getCommentCounts(). Undefined means the count is unknown
+ * (Supabase unreachable, or 004 not applied), which reads differently from zero
+ * and so falls back to the plain link.
+ */
+export default function ReportCard({
+  report,
+  commentCount,
+}: {
+  report: ReportRow;
+  commentCount?: number;
+}) {
   const meta = report.issue_type ? ISSUE_META[report.issue_type] : null;
   const title = report.summary || report.raw_text || "Untitled report";
   // Rejected rows are filtered out upstream in getReports, so a card only ever
@@ -60,7 +72,9 @@ export default function ReportCard({ report }: { report: ReportRow }) {
         <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-muted">
           <span className="truncate">📮 {report.authority_assigned || "Unrouted"}</span>
           <Link href={`/c/${report.id}`} className="hover:text-foreground">
-            💬 View complaint
+            {commentCount
+              ? `💬 ${commentCount} ${commentCount === 1 ? "reply" : "replies"}`
+              : "💬 View complaint"}
           </Link>
         </div>
       </div>
