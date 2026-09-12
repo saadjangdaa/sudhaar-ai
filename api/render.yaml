@@ -11,8 +11,12 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: "3.12.7"
+      # Set in the dashboard, not here. Pinning it to "true" in the blueprint
+      # meant a blueprint sync could silently put the deployed API back on canned
+      # agent output — the validator would stop calling the model and every
+      # complaint would pass review regardless of what was in the photo.
       - key: MOCK_AGENTS
-        value: "true"
+        sync: false
       - key: OPENAI_MODEL
         value: gpt-4o-mini
       # set these in the Render dashboard, not here
