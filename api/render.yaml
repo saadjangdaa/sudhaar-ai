@@ -1,0 +1,26 @@
+# Render blueprint. In the dashboard set Root Directory to "api".
+services:
+  - type: web
+    name: sudhaar-ai-api
+    runtime: python
+    rootDir: api
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.7"
+      - key: MOCK_AGENTS
+        value: "true"
+      - key: OPENAI_MODEL
+        value: gpt-4o-mini
+      # set these in the Render dashboard, not here
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false
