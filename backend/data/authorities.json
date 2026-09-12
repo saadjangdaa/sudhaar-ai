@@ -1,0 +1,50 @@
+[
+  {
+    "authority": "SSWMB",
+    "areas": ["Gulshan-e-Iqbal", "Gulshan", "North Nazimabad", "Federal B Area"],
+    "issues": ["garbage"],
+    "contact_email": "info@sswmb.example"
+  },
+  {
+    "authority": "KWSB",
+    "areas": ["Gulshan-e-Iqbal", "Clifton", "Malir", "Korangi", "Landhi"],
+    "issues": ["sewage", "water"],
+    "contact_email": "info@kwsb.example"
+  },
+  {
+    "authority": "KMC",
+    "areas": ["Saddar", "Gulshan-e-Iqbal", "Clifton", "Lyari", "SITE"],
+    "issues": ["pothole", "encroachment"],
+    "contact_email": "info@kmc.example"
+  },
+  {
+    "authority": "DHA Maintenance",
+    "areas": ["DHA Phase 1", "DHA Phase 2", "DHA Phase 5", "Clifton"],
+    "issues": ["pothole", "sewage", "garbage", "water"],
+    "contact_email": "maintenance@dha.example"
+  },
+  {
+    "authority": "Malir District Office",
+    "areas": ["Malir", "Bin Qasim", "Gadap"],
+    "issues": ["pothole", "garbage", "encroachment"],
+    "contact_email": "malir.district@example"
+  },
+  {
+    "authority": "Karachi Water & Sewerage Board — East",
+    "areas": ["Gulshan-e-Iqbal", "Jamshed Town", "Gulistan-e-Johar"],
+    "issues": ["water", "sewage"],
+    "contact_email": "east@kwsb.example"
+  },
+  {
+    "authority": "Encroachment Removal Cell",
+    "areas": ["Saddar", "Burns Road", "Empress Market", "Clifton"],
+    "issues": ["encroachment"],
+    "contact_email": "encroachment@kmc.example"
+  },
+  {
+    "authority": "Town Administration",
+    "areas": ["*"],
+    "issues": ["pothole", "garbage", "encroachment", "sewage", "water"],
+    "contact_email": "info@townadmin.example"
+  }
+]
