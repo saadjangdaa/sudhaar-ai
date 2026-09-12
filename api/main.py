@@ -69,6 +69,9 @@ async def create_report(payload: ReportRequest) -> ReportResponse:
         "area_tag": state.get("area_tag"),
         "authority_slug": state.get("authority_slug"),
         "authority_assigned": state.get("authority_assigned"),
+        # Why this desk got it. Returned in ReportResponse since the start but not
+        # stored until 003, so an authority opening the row saw no justification.
+        "routing_reason": state.get("routing_reason"),
         "complaint_text": state.get("complaint_text"),
         "language": payload.language,
         # validator agent

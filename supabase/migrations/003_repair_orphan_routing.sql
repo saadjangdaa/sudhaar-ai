@@ -1,22 +1,39 @@
--- Repairs reports that no authority desk can ever see.
+-- Adds reports.routing_reason, then repairs reports that no desk can ever see.
+--
+-- Safe to re-run: the column add is guarded and every update is scoped to rows
+-- that are still broken.
+
+-- ---------------------------------------------------------------------------
+-- routing_reason was never persisted.
+--
+-- router.py computes it, main.py returns it in ReportResponse, and
+-- web/src/lib/types.ts declares it — but it was missing from the insert and from
+-- the table, so the one sentence explaining why a complaint landed on a given
+-- desk was shown to the citizen once at submit time and then discarded. The
+-- authority opening that report later has no idea why it is theirs.
+-- ---------------------------------------------------------------------------
+alter table public.reports
+  add column if not exists routing_reason text;
+
+-- ---------------------------------------------------------------------------
+-- Rows that belong to no desk.
 --
 -- The admin desk selects with `.eq("authority_slug", <desk slug>)`. A row whose
 -- authority_slug is NULL, or is a slug with no matching public.authorities row,
--- therefore belongs to no desk and is invisible to every authority forever — the
--- citizen is told their complaint was filed, and nobody is ever shown it.
+-- therefore belongs to nobody and is invisible to every authority forever — the
+-- citizen is told their complaint was filed, and no authority is ever shown it.
 --
 -- Two causes, both present in the live table:
---   * NULL slug        — written before the router set authority_slug.
+--   * NULL slug         — written before the router set authority_slug.
 --   * 'dha_maintenance' — a department that does not exist. api/app/graph/router.py
---     resolves the authority by deterministic table lookup and cannot emit this, so
---     these rows predate that design. DHA is cantonment jurisdiction, and
+--     resolves the authority by deterministic table lookup and cannot emit this,
+--     so these rows predate that design. DHA is cantonment jurisdiction, and
 --     api/app/authorities.py maps dha -> cbc, which is where they should have gone.
 --
 -- area_tag is normalized in the same pass: it holds raw free text ("DHA",
 -- "Gulshan-e-Iqbal, Karachi") on these rows, so AREA_LABELS lookups and the
 -- dashboard area filter both miss them.
---
--- Safe to re-run: every statement is scoped to rows that are still broken.
+-- ---------------------------------------------------------------------------
 
 -- Garbage in Gulshan-e-Iqbal -> Sindh Solid Waste Management Board.
 update public.reports

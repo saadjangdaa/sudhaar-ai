@@ -22,6 +22,8 @@ export const DEMO_REPORTS: ReportRow[] = [
     area_tag: "gulshan_e_iqbal",
     authority_slug: "kmc",
     authority_assigned: "Karachi Metropolitan Corporation",
+    routing_reason:
+      "Pothole complaints in Gulshan-e-Iqbal are handled by Karachi Metropolitan Corporation.",
     complaint_text: "",
     language: "en",
     upvotes: 128,
@@ -45,6 +47,8 @@ export const DEMO_REPORTS: ReportRow[] = [
     area_tag: "lyari",
     authority_slug: "kwsb",
     authority_assigned: "Karachi Water & Sewerage Board",
+    routing_reason:
+      "Sewage complaints in Lyari are handled by Karachi Water & Sewerage Board.",
     complaint_text: "",
     language: "en",
     upvotes: 94,
@@ -68,6 +72,8 @@ export const DEMO_REPORTS: ReportRow[] = [
     area_tag: "north_nazimabad",
     authority_slug: "sswmb",
     authority_assigned: "Sindh Solid Waste Management Board",
+    routing_reason:
+      "Garbage complaints in North Nazimabad are handled by Sindh Solid Waste Management Board.",
     complaint_text: "",
     language: "ur",
     upvotes: 71,
@@ -91,6 +97,8 @@ export const DEMO_REPORTS: ReportRow[] = [
     area_tag: "saddar",
     authority_slug: "tma",
     authority_assigned: "Town Municipal Administration",
+    routing_reason:
+      "Encroachment complaints in Saddar are handled by Town Municipal Administration.",
     complaint_text: "",
     language: "en",
     upvotes: 55,
@@ -114,6 +122,8 @@ export const DEMO_REPORTS: ReportRow[] = [
     area_tag: "clifton",
     authority_slug: "cbc",
     authority_assigned: "Cantonment Board Clifton",
+    routing_reason:
+      "Clifton falls under cantonment administration, which handles all municipal services within its limits.",
     complaint_text: "",
     language: "en",
     upvotes: 38,
@@ -137,6 +147,8 @@ export const DEMO_REPORTS: ReportRow[] = [
     area_tag: "korangi",
     authority_slug: "kmc",
     authority_assigned: "Karachi Metropolitan Corporation",
+    routing_reason:
+      "Pothole complaints in Korangi are handled by Karachi Metropolitan Corporation.",
     complaint_text: "",
     language: "en",
     upvotes: 21,

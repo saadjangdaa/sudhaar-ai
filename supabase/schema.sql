@@ -22,7 +22,8 @@ create table if not exists public.reports (
   media_type          text,          -- 'photo' | 'audio' | null
   transcript          text,
   email_status        text,          -- null | 'sent' | 'failed' | 'skipped'
-  authority_slug      text           -- stable key into public.authorities
+  authority_slug      text,          -- stable key into public.authorities
+  routing_reason      text           -- why this authority, in one sentence
 );
 
 create index if not exists reports_upvotes_idx   on public.reports (upvotes desc, created_at desc);

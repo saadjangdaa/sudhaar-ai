@@ -78,6 +78,7 @@ export interface ReportRow {
   area_tag: string | null;
   authority_slug: string | null;
   authority_assigned: string | null;
+  routing_reason: string | null;
   complaint_text: string | null;
   language: Language | null;
   upvotes: number;
