@@ -12,7 +12,16 @@ import { AREA_LABELS, AREAS, type Language, type MediaType, type ReportResponse 
  * A cold Render dyno plus three model calls is a long silence, so the stages are
  * shown explicitly rather than behind one spinner.
  */
-const STAGES = ["Uploading", "Waking backend", "Classifying", "Routing", "Drafting letter"];
+// Mirrors the graph in api/app/graph/pipeline.py. "Checking authenticity" is the
+// validator agent; a rejected report stops there and never reaches the last two.
+const STAGES = [
+  "Uploading",
+  "Waking backend",
+  "Classifying",
+  "Checking authenticity",
+  "Routing",
+  "Drafting letter",
+];
 
 export default function ReportForm() {
   const [text, setText] = useState("");

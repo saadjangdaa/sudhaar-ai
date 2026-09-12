@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import AiOverview from "@/components/AiOverview";
 import VoteBox from "@/components/VoteBox";
-import { areaLabel, ISSUE_META, timeAgo } from "@/lib/format";
+import { areaLabel, ISSUE_META, STATUS_META, timeAgo } from "@/lib/format";
 import { getReport } from "@/lib/reports";
 
 export const dynamic = "force-dynamic";
@@ -13,8 +14,15 @@ export default async function ComplaintPage({ params }: PageProps<"/c/[id]">) {
   if (!report) notFound();
 
   const meta = report.issue_type ? ISSUE_META[report.issue_type] : null;
+  const status = STATUS_META[report.status ?? "pending"];
   const isUrdu = report.language === "ur";
-  const body = report.complaint_text || report.raw_text || report.transcript || "";
+  const rejected = report.status === "rejected";
+  // A rejected report was never routed and never drafted, so there is no letter.
+  // Falling back to raw_text here would print the citizen's own words under a
+  // "Complaint letter" heading and imply something was sent. Nothing was.
+  const body = rejected
+    ? ""
+    : report.complaint_text || report.raw_text || report.transcript || "";
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-6">
@@ -35,7 +43,10 @@ export default async function ComplaintPage({ params }: PageProps<"/c/[id]">) {
                 {meta.icon} {meta.label}
               </span>
             )}
-            {report.email_status === "sent" && (
+            <span className={`rounded-full px-2 py-0.5 font-medium ${status.tone}`}>
+              {status.icon} {status.label}
+            </span>
+            {!rejected && report.email_status === "sent" && (
               <span className="rounded-full bg-emerald-600/15 px-2 py-0.5 font-medium text-emerald-700 dark:text-emerald-300">
                 ✓ Sent to authority
               </span>
@@ -61,10 +72,30 @@ export default async function ComplaintPage({ params }: PageProps<"/c/[id]">) {
             <audio controls src={report.media_url} className="mt-3 w-full" />
           )}
 
-          <div className="mt-4 rounded-lg bg-surface-2 p-4 text-sm">
-            <p className="text-xs uppercase tracking-wide text-muted">Routed to</p>
-            <p className="mt-1 font-semibold">{report.authority_assigned || "Not yet routed"}</p>
-          </div>
+          <AiOverview report={report} />
+
+          {rejected ? (
+            <div className="mt-4 rounded-lg border border-line bg-surface-2 p-4 text-sm">
+              <p className="font-semibold">This report is not published</p>
+              <p className="mt-1 text-muted">
+                It did not pass automated review, so it does not appear on the public feed
+                and was not sent to any authority. If you believe this is a mistake,
+                submit the complaint again with a clearer photo and a short description
+                of what is wrong.
+              </p>
+              <Link
+                href="/submit"
+                className="mt-3 inline-block rounded-md bg-brand px-3 py-1.5 text-xs font-semibold text-white"
+              >
+                Submit again
+              </Link>
+            </div>
+          ) : (
+            <div className="mt-4 rounded-lg bg-surface-2 p-4 text-sm">
+              <p className="text-xs uppercase tracking-wide text-muted">Routed to</p>
+              <p className="mt-1 font-semibold">{report.authority_assigned || "Not yet routed"}</p>
+            </div>
+          )}
 
           {report.raw_text && (
             <div className="mt-4">

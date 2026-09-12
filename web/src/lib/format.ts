@@ -1,4 +1,4 @@
-import { AREA_LABELS, type IssueType } from "@/lib/types";
+import { AREA_LABELS, type IssueType, type ReportStatus } from "@/lib/types";
 
 export const ISSUE_META: Record<IssueType, { label: string; icon: string; tone: string }> = {
   pothole: { label: "Pothole", icon: "🕳️", tone: "bg-amber-500/15 text-amber-700 dark:text-amber-300" },
@@ -7,6 +7,44 @@ export const ISSUE_META: Record<IssueType, { label: string; icon: string; tone: 
   encroachment: { label: "Encroachment", icon: "🚧", tone: "bg-fuchsia-600/15 text-fuchsia-700 dark:text-fuchsia-300" },
   water: { label: "Water", icon: "💧", tone: "bg-sky-600/15 text-sky-700 dark:text-sky-300" },
 };
+
+/**
+ * Status chips. The colours come from the tokens in globals.css, which the
+ * authority desk also maps onto, so a "pending" chip looks identical in both.
+ */
+export const STATUS_META: Record<
+  ReportStatus,
+  { label: string; icon: string; tone: string }
+> = {
+  pending: {
+    label: "Pending",
+    icon: "⏳",
+    tone: "bg-warn-weak text-warn",
+  },
+  in_progress: {
+    label: "In progress",
+    icon: "🔧",
+    tone: "bg-info-weak text-info",
+  },
+  fixed: {
+    label: "Fixed",
+    icon: "✅",
+    tone: "bg-ok-weak text-ok",
+  },
+  rejected: {
+    label: "Rejected",
+    icon: "⛔",
+    tone: "bg-danger-weak text-danger",
+  },
+};
+
+/** How much the validator agent's confidence should be trusted, in words. */
+export function confidenceLabel(value?: number | null): string {
+  if (value === null || value === undefined || value <= 0) return "not scored";
+  if (value >= 0.85) return "high confidence";
+  if (value >= 0.6) return "moderate confidence";
+  return "low confidence";
+}
 
 export function areaLabel(area?: string | null): string {
   if (!area) return "Karachi";

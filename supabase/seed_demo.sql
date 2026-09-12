@@ -1,7 +1,7 @@
 -- Demo data. Run AFTER schema.sql and seed_authorities.sql.
 --
 -- WHY THIS RUNS AT STAGE 0, not at the end: the citizen feed needs rows to sort
--- by upvotes, and the /adminauthority portal needs real notification rows to
+-- by upvotes, and the /admin authority desk needs real notification rows to
 -- render. Seeding early means two developers build against real data instead of
 -- mocking it.
 --

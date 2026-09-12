@@ -8,6 +8,13 @@
 export type IssueType = "pothole" | "sewage" | "garbage" | "encroachment" | "water";
 export type Language = "en" | "ur";
 export type MediaType = "photo" | "audio";
+/**
+ * One lifecycle, two owners. The validator agent sets "rejected" or "pending";
+ * the authority desk moves "pending" -> "in_progress" -> "fixed".
+ * "rejected" rows are hidden from the public feed and from the authority desk.
+ */
+export type ReportStatus = "pending" | "in_progress" | "fixed" | "rejected";
+export type EvidenceQuality = "strong" | "weak" | "none";
 
 /** POST /api/report request body. At least one of raw_text / media_url required. */
 export interface ReportRequest {
@@ -33,6 +40,13 @@ export interface ReportResponse {
   summary: string;
   confidence: number;
 
+  /** validator agent */
+  status: ReportStatus;
+  ai_overview?: string | null;
+  validity_confidence: number;
+  rejection_reason?: string | null;
+  evidence_quality: EvidenceQuality;
+
   area_tag?: string | null;
   authority_slug: string;
   authority_assigned: string;
@@ -56,6 +70,11 @@ export interface ReportRow {
   transcript: string | null;
   issue_type: IssueType | null;
   summary: string | null;
+  status: ReportStatus | null;
+  ai_overview: string | null;
+  validity_confidence: number | null;
+  rejection_reason: string | null;
+  evidence_quality: EvidenceQuality | null;
   area_tag: string | null;
   authority_slug: string | null;
   authority_assigned: string | null;
@@ -72,7 +91,7 @@ export interface AuthorityRow {
   acronym: string | null;
   email: string | null;
   phone: string | null;
-  /** Reserved for the /adminauthority login work. Nothing reads it yet. */
+  /** Links this authority to a Supabase auth account. Set by /admin approvals. */
   auth_user_id: string | null;
   created_at: string;
 }

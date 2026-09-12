@@ -11,6 +11,22 @@
   --brand-weak: #fdece5;
   --upvote: #e05a2b;
   --downvote: #6a8cf2;
+
+  /* Status vocabulary, shared by the citizen feed and the authority desk so a
+     'pending' chip is the same colour in both. Mirrors ReportStatus. */
+  --warn: #9a6700;          /* pending */
+  --warn-weak: #fdf5e3;
+  --info: #1d4f86;          /* in_progress */
+  --info-weak: #e8f0f9;
+  --ok: #1f7a5c;            /* fixed */
+  --ok-weak: #e4f3ee;
+  --danger: #9b2c2c;        /* rejected */
+  --danger-weak: #fdecec;
+
+  /* The AI overview panel. Distinct from brand so an AI judgement never reads
+     as the platform's own editorial voice. */
+  --ai: #5b4bc4;
+  --ai-weak: #eeebfb;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -25,6 +41,18 @@
     --brand-weak: #2a1a13;
     --upvote: #ff6a35;
     --downvote: #7e9cff;
+
+    --warn: #e3b341;
+    --warn-weak: #2a2113;
+    --info: #6f9fe0;
+    --info-weak: #131d29;
+    --ok: #46b98e;
+    --ok-weak: #10231c;
+    --danger: #f07d7d;
+    --danger-weak: #2a1516;
+
+    --ai: #a99cf5;
+    --ai-weak: #1a1830;
   }
 }
 
@@ -39,6 +67,16 @@
   --color-brand-weak: var(--brand-weak);
   --color-upvote: var(--upvote);
   --color-downvote: var(--downvote);
+  --color-warn: var(--warn);
+  --color-warn-weak: var(--warn-weak);
+  --color-info: var(--info);
+  --color-info-weak: var(--info-weak);
+  --color-ok: var(--ok);
+  --color-ok-weak: var(--ok-weak);
+  --color-danger: var(--danger);
+  --color-danger-weak: var(--danger-weak);
+  --color-ai: var(--ai);
+  --color-ai-weak: var(--ai-weak);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

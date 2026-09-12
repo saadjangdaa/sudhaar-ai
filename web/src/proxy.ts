@@ -80,6 +80,7 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // `/admin/:path*` does not match /adminauthority (different first segment).
+  // Citizen routes are deliberately outside this matcher — the feed, submit flow
+  // and /login must stay reachable without an authority session.
   matcher: ["/admin", "/admin/:path*"],
 };

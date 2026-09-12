@@ -8,7 +8,7 @@
  * ############################################################################
  *
  * Why it exists: public.notifications and public.authorities have RLS enabled
- * with NO policies, so the anon key cannot read them at all. The /adminauthority
+ * with NO policies, so the anon key cannot read them at all. The authority desk under /admin
  * portal therefore reads through this client from server components only.
  *
  * When real per-authority auth lands, the right long-term fix is RLS policies

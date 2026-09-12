@@ -109,5 +109,5 @@ It returns the new count, is idempotent per `session_id`, and is race-free.
 | `notifications` | nothing |
 
 `authorities` and `notifications` have RLS enabled with no policies. The API writes
-with the service-role key, and the `/adminauthority` portal reads with a
+with the service-role key, and the `/admin` authority desk reads with a
 service-role client from server components only.

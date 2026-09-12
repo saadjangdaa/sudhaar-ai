@@ -71,6 +71,12 @@ async def create_report(payload: ReportRequest) -> ReportResponse:
         "authority_assigned": state.get("authority_assigned"),
         "complaint_text": state.get("complaint_text"),
         "language": payload.language,
+        # validator agent
+        "status": state.get("status") or "pending",
+        "ai_overview": state.get("ai_overview"),
+        "validity_confidence": state.get("validity_confidence", 0.0),
+        "rejection_reason": state.get("rejection_reason"),
+        "evidence_quality": state.get("evidence_quality") or "weak",
     }
 
     try:
@@ -79,15 +85,19 @@ async def create_report(payload: ReportRequest) -> ReportResponse:
         log.exception("failed to persist report")
         raise HTTPException(status_code=500, detail=f"Could not save report: {exc}") from exc
 
+    rejected = saved.get("status") == "rejected"
+
     # Authority contact details live in the DB; fall back to None rather than
-    # failing the whole request over a missing lookup.
+    # failing the whole request over a missing lookup. A rejected report was never
+    # routed, so there is nothing to look up.
     authority_email = None
-    try:
-        authority = db.get_authority_by_slug(saved.get("authority_slug") or "")
-        if authority:
-            authority_email = authority.get("email")
-    except Exception:
-        log.warning("authority lookup failed", exc_info=True)
+    if not rejected:
+        try:
+            authority = db.get_authority_by_slug(saved.get("authority_slug") or "")
+            if authority:
+                authority_email = authority.get("email")
+        except Exception:
+            log.warning("authority lookup failed", exc_info=True)
 
     return ReportResponse(
         id=str(saved["id"]),
@@ -99,8 +109,14 @@ async def create_report(payload: ReportRequest) -> ReportResponse:
         issue_type=saved.get("issue_type") or "pothole",
         summary=saved.get("summary") or "",
         confidence=state.get("confidence", 0.0),
+        status=saved.get("status") or "pending",
+        ai_overview=saved.get("ai_overview"),
+        validity_confidence=saved.get("validity_confidence") or 0.0,
+        rejection_reason=saved.get("rejection_reason"),
+        evidence_quality=saved.get("evidence_quality") or "weak",
         area_tag=saved.get("area_tag"),
-        authority_slug=saved.get("authority_slug") or "kmc",
+        # Empty, not 'kmc', when the report was rejected and never routed.
+        authority_slug=saved.get("authority_slug") or ("" if rejected else "kmc"),
         authority_assigned=saved.get("authority_assigned") or "",
         authority_email=authority_email,
         routing_reason=state.get("routing_reason"),
@@ -123,6 +139,15 @@ async def email_report(report_id: str) -> EmailResponse:
     report = db.get_report(report_id)
     if not report:
         raise HTTPException(status_code=404, detail="report not found")
+
+    # A report the validator rejected has no authority and no letter. Sending one
+    # would mean mailing an authority about a complaint the system judged fake.
+    if report.get("status") == "rejected":
+        return EmailResponse(
+            report_id=report_id,
+            email_status="skipped",
+            detail="This report did not pass automated review, so it is not sent to any authority.",
+        )
 
     status, detail = await send_complaint_email(report)
     return EmailResponse(report_id=report_id, email_status=status, detail=detail)

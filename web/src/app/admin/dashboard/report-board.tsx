@@ -20,14 +20,23 @@ import { Label } from "../_components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../_components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../_components/ui/tooltip";
 
-const TABS: { id: "all" | ReportStatus; label: string }[] = [
+/**
+ * The validator agent rejects a report before it ever reaches an authority, and
+ * getReportsForAuthority filters those rows out, so this desk has no "rejected"
+ * tab to offer. Tabs and their empty states are typed over what the desk can
+ * actually show; statusLabel/statusTone still handle "rejected" so a leaked row
+ * renders honestly instead of being stamped "Pending".
+ */
+type DeskStatus = Exclude<ReportStatus, "rejected">;
+
+const TABS: { id: "all" | DeskStatus; label: string }[] = [
   { id: "all", label: "All" },
   { id: "pending", label: "Pending" },
   { id: "in_progress", label: "In Progress" },
   { id: "fixed", label: "Fixed" },
 ];
 
-const EMPTY: Record<"all" | ReportStatus, string> = {
+const EMPTY: Record<"all" | DeskStatus, string> = {
   all: "No complaints on this desk yet.",
   pending: "Nothing waiting. New complaints will land here.",
   in_progress: "No jobs in progress.",
@@ -37,7 +46,12 @@ const EMPTY: Record<"all" | ReportStatus, string> = {
 function statusLabel(status: ReportStatus) {
   if (status === "in_progress") return "In progress";
   if (status === "fixed") return "Fixed";
+  if (status === "rejected") return "Rejected";
   return "Pending";
+}
+
+function statusTone(status: ReportStatus) {
+  return status === "rejected" ? "muted" : status;
 }
 
 function issueLabel(issueType: string) {
@@ -54,14 +68,14 @@ function formatWhen(iso: string) {
 }
 
 export function ReportBoard({ reports }: { reports: Report[] }) {
-  const [tab, setTab] = useState<"all" | ReportStatus>("all");
+  const [tab, setTab] = useState<"all" | DeskStatus>("all");
   const visible = useMemo(
     () => (tab === "all" ? reports : reports.filter((report) => report.status === tab)),
     [reports, tab],
   );
 
   return (
-    <Tabs value={tab} onValueChange={(value) => setTab(value as "all" | ReportStatus)}>
+    <Tabs value={tab} onValueChange={(value) => setTab(value as "all" | DeskStatus)}>
       <TabsList>
         {TABS.map((item) => {
           const count = item.id === "all" ? reports.length : reports.filter((r) => r.status === item.id).length;
@@ -119,7 +133,7 @@ function ComplaintCard({ report }: { report: Report }) {
           </div>
         )}
         <div className="absolute top-3 right-3">
-          <Badge tone={report.status}>{statusLabel(report.status)}</Badge>
+          <Badge tone={statusTone(report.status)}>{statusLabel(report.status)}</Badge>
         </div>
       </div>
       <CardContent className="space-y-2">

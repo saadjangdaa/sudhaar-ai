@@ -19,6 +19,16 @@ class ReportState(TypedDict, total=False):
     summary: str
     confidence: float
 
+    # --- validator ---
+    # 'pending'  = published on the public feed
+    # 'rejected' = hidden from the public feed, router and drafter skipped
+    status: str
+    is_valid: bool
+    validity_confidence: float
+    rejection_reason: Optional[str]
+    ai_overview: Optional[str]
+    evidence_quality: str
+
     # --- router ---
     area_tag: Optional[str]
     authority_slug: str

@@ -62,9 +62,9 @@ def get_authority_by_slug(slug: str) -> Optional[dict[str, Any]]:
 # notifications
 #
 # Written to by the mailer after a complaint email sends. Read by the
-# /adminauthority portal — but that portal queries Postgres directly from
-# Next.js server components, so the TS twin of the read helper below lives in
-# web/src/lib/adminauthority/queries.ts. The duplication is intentional.
+# /admin authority desk — but that desk queries Postgres directly from Next.js
+# server components, so the TS twin of the read helper below lives in
+# web/src/lib/admin/notifications.ts. The duplication is intentional.
 # --------------------------------------------------------------------------
 
 def create_notification_for_report(
@@ -99,8 +99,8 @@ def get_notifications_for_authority(
 ) -> list[dict[str, Any]]:
     """Query only — nothing calls this yet.
 
-    It exists so the /adminauthority work has a known-good query to build on.
-    No endpoint, no UI: see web/src/app/adminauthority/README.md.
+    It exists so the authority desk has a known-good query to build on.
+    No endpoint yet: see web/src/lib/admin/notifications.ts for the TS twin.
     """
     query = db().table("notifications").select("*").eq("authority_id", authority_id)
     if unread_only:

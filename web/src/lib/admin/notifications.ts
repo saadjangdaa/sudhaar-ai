@@ -1,11 +1,13 @@
 /**
- * Data access for the /adminauthority portal. SERVER COMPONENTS ONLY.
+ * Notification reads for the authority desk. SERVER COMPONENTS ONLY.
  *
- * TODO: build by [teammate] — this is the starting point, not the finished thing.
+ * The TS twin of get_notifications_for_authority in api/app/db.py. The desk talks
+ * to Postgres directly rather than through FastAPI, so the query lives in both
+ * places on purpose.
  *
- * The TS twin of get_notifications_for_authority in api/app/db.py. The portal
- * talks to Postgres directly rather than through FastAPI, so the query lives in
- * both places on purpose.
+ * A notifications row means "this authority was actually emailed about this
+ * report", written by api/app/mailer.py after a successful SMTP send. The desk
+ * does not surface these yet; the queries are here and working for when it does.
  */
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { AuthorityRow, NotificationRow } from "@/lib/types";
@@ -31,8 +33,8 @@ export async function getNotificationsForAuthority(
 /**
  * Every notification, across all authorities.
  *
- * Only useful until login exists. There is no session yet, so the portal cannot
- * know WHICH authority is looking — see the README in this route folder.
+ * Unscoped, so it is for the super-admin view only — never for a desk signed in
+ * as one authority. Use getNotificationsForAuthority for that.
  */
 export async function getAllNotifications(limit = 50): Promise<NotificationRow[]> {
   const { data, error } = await createAdminClient()

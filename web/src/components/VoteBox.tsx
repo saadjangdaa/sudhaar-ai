@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { getSessionId } from "@/lib/session";
-import { supabase } from "@/lib/supabase/client";
+import { getSupabase } from "@/lib/supabase/client";
 
 /**
  * Reddit-style vote control. Upvote goes through the upvote_report RPC, which is
@@ -32,7 +32,7 @@ export default function VoteBox({
     setState("up");
 
     try {
-      const { data, error } = await supabase.rpc("upvote_report", {
+      const { data, error } = await getSupabase().rpc("upvote_report", {
         p_report_id: reportId,
         p_session_id: getSessionId(),
       });

@@ -29,20 +29,26 @@ create index if not exists reports_upvotes_idx   on public.reports (upvotes desc
 create index if not exists reports_area_idx      on public.reports (area_tag);
 create index if not exists reports_authority_idx on public.reports (authority_assigned);
 
--- Desk workflow. Additive and safe to re-run on an existing database.
+-- One status column serves two workflows, so all four values live in one place:
+--
+--   rejected     the validator agent judged the complaint fake. Hidden from the
+--                public feed and from the authority desk. Terminal.
+--   pending      passed automated review, published, not yet picked up
+--   in_progress  an authority has taken it on            (admin desk)
+--   fixed        an authority proved the repair           (admin desk, verify-fix)
+--
+-- Adding a value here means adding it to api/app/schemas.py, web/src/lib/types.ts
+-- and web/src/lib/admin/types.ts as well.
 alter table public.reports
   add column if not exists status text not null default 'pending';
 
-do $$
-begin
-  if not exists (
-    select 1 from pg_constraint where conname = 'reports_status_check'
-  ) then
-    alter table public.reports
-      add constraint reports_status_check
-      check (status in ('pending', 'in_progress', 'fixed'));
-  end if;
-end $$;
+-- Dropped and recreated rather than created-if-absent: an older database may
+-- already carry a three-value version of this constraint, and leaving it in place
+-- would make every 'rejected' insert fail.
+alter table public.reports drop constraint if exists reports_status_check;
+alter table public.reports
+  add constraint reports_status_check
+  check (status in ('pending', 'in_progress', 'fixed', 'rejected'));
 
 create index if not exists reports_status_idx on public.reports (status, created_at desc);
 
@@ -63,7 +69,7 @@ create table if not exists public.authorities (
   acronym       text,
   email         text,
   phone         text,
-  -- RESERVED for the /adminauthority login work: links an authority to a
+  -- Links an authority to a Supabase auth account. Set by /admin approvals.
   -- Supabase auth account. Nothing reads or writes this yet.
   auth_user_id  uuid references auth.users(id) on delete set null,
   created_at    timestamptz not null default now()
@@ -136,8 +142,8 @@ create policy "reports are publicly readable"
 
 -- authorities + notifications: RLS enabled with ZERO policies = deny-all to the
 -- anon key. Reachable only by the service role (server-side).
--- Per-authority read policies are deliberately left for the /adminauthority work;
--- see web/src/app/adminauthority/README.md.
+-- Per-authority read policies are deliberately left to the authority desk work;
+-- see web/src/lib/admin/.
 
 -- ---------------------------------------------------------------------------
 -- storage: public bucket for report photos / voice notes
@@ -157,5 +163,3 @@ create policy "report media is publicly readable"
   on storage.objects for select
   using (bucket_id = 'report-media');
 
-alter table public.reports
-  add column if not exists status text not null default 'pending';

@@ -23,7 +23,8 @@ export interface FeedFilters {
 }
 
 function filterDemo(rows: ReportRow[], filters: FeedFilters): ReportRow[] {
-  let out = rows;
+  // Same rule as the live query below, so demo mode and live mode agree.
+  let out = rows.filter((r) => r.status !== "rejected");
   if (filters.area) out = out.filter((r) => r.area_tag === filters.area);
   if (filters.authority) out = out.filter((r) => r.authority_slug === filters.authority);
   if (filters.issue_type) out = out.filter((r) => r.issue_type === filters.issue_type);
@@ -39,7 +40,12 @@ export async function getReports(filters: FeedFilters = {}): Promise<ReportRow[]
   if (!SUPABASE_CONFIGURED) return filterDemo(DEMO_REPORTS, filters);
 
   try {
-    let query = createServerClient().from("reports").select("*").limit(100);
+    let query = createServerClient()
+      .from("reports")
+      .select("*")
+      // The validator agent rejected these as fake. They must never be public.
+      .neq("status", "rejected")
+      .limit(100);
 
     if (filters.area) query = query.eq("area_tag", filters.area);
     if (filters.authority) query = query.eq("authority_slug", filters.authority);
@@ -58,6 +64,14 @@ export async function getReports(filters: FeedFilters = {}): Promise<ReportRow[]
   }
 }
 
+/**
+ * One report by id, rejected ones included.
+ *
+ * The feed excludes rejected reports; this does not, so the citizen who submitted
+ * one can still open their own link and read why it was turned down. The detail
+ * page renders that as a rejection notice instead of a complaint — see
+ * web/src/app/c/[id]/page.tsx.
+ */
 export async function getReport(id: string): Promise<ReportRow | null> {
   if (!SUPABASE_CONFIGURED) return DEMO_REPORTS.find((r) => r.id === id) ?? null;
 

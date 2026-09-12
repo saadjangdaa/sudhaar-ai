@@ -29,9 +29,9 @@ Directories are disjoint on purpose, so we all commit to `main` without conflict
 
 | Who | Owns | Working on |
 |---|---|---|
-| Saad | `web/` except `adminauthority` | Report form, feed, dashboard |
+| Saad | `web/` except `admin` | Report form, feed, dashboard |
 | Dev A | all of `api/` | Real prompts, then Gmail SMTP — see `api/README.md` |
-| Dev B | `web/src/app/adminauthority/`, `web/src/lib/adminauthority/` | Portal — see its README |
+| Dev B | `web/src/app/admin/`, `web/src/lib/admin/` | Authority desk |
 | shared | `supabase/`, `docs/CONTRACTS.md`, `web/src/lib/types.ts` | **announce before editing** |
 
 **The one rule: never push a commit that does not build.** A broken `main` blocks
@@ -77,7 +77,7 @@ npm run dev
 ## What is deliberately not built
 
 Per-authority RBAC in the citizen flow, AI-generated "fixed road" images, 3D
-models, and comments on reports. Authority login lives only in `/adminauthority`
+models, and comments on reports. Authority login lives only in `/admin`
 and is that persons scope.
 
 ## Watch out for

@@ -46,7 +46,17 @@ function service() {
 }
 
 function parseStatus(value: unknown): ReportStatus {
-  if (value === "in_progress" || value === "fixed" || value === "pending") return value;
+  // "rejected" must map to itself. Folding it into "pending" — as this did before
+  // the validator agent existed — would show an authority a complaint the system
+  // had already judged fake, as though it were a genuine one awaiting action.
+  if (
+    value === "in_progress" ||
+    value === "fixed" ||
+    value === "pending" ||
+    value === "rejected"
+  ) {
+    return value;
+  }
   return "pending";
 }
 
@@ -160,6 +170,10 @@ export class SupabaseReportsRepository implements ReportsRepository {
       .from("reports")
       .select("*")
       .eq("authority_slug", authority.slug)
+      // Reports the validator agent rejected are never an authority's problem.
+      // Rejected rows are also left unrouted, so this is belt and braces — but the
+      // guarantee should be explicit rather than a side effect of empty slugs.
+      .neq("status", "rejected")
       .order("created_at", { ascending: false });
 
     if (status) query = query.eq("status", status);
@@ -176,7 +190,7 @@ export class SupabaseReportsRepository implements ReportsRepository {
         if (fallback.error) throw new Error(`Could not load reports: ${fallback.error.message}`);
         return ((fallback.data ?? []) as ReportRow[])
           .map((row) => mapReport(row, authority.id))
-          .filter((report) => report.status === status);
+          .filter((report) => report.status !== "rejected" && report.status === status);
       }
       throw new Error(`Could not load reports: ${error.message}`);
     }

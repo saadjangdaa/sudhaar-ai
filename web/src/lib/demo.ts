@@ -26,6 +26,12 @@ export const DEMO_REPORTS: ReportRow[] = [
     language: "en",
     upvotes: 128,
     email_status: "sent",
+    status: "pending",
+    ai_overview:
+      "The photo shows a deep, water-filled break in the road surface wide enough to catch a motorcycle wheel. This matches the description and looks like a genuine road-maintenance failure.",
+    validity_confidence: 0.93,
+    rejection_reason: null,
+    evidence_quality: "strong",
   },
   {
     id: "demo-2",
@@ -43,6 +49,12 @@ export const DEMO_REPORTS: ReportRow[] = [
     language: "en",
     upvotes: 94,
     email_status: "sent",
+    status: "pending",
+    ai_overview:
+      "Standing wastewater is visible across the roadway with clear discolouration at the drain. Consistent with a blocked or broken sewer line rather than rainwater.",
+    validity_confidence: 0.89,
+    rejection_reason: null,
+    evidence_quality: "strong",
   },
   {
     id: "demo-3",
@@ -60,6 +72,12 @@ export const DEMO_REPORTS: ReportRow[] = [
     language: "ur",
     upvotes: 71,
     email_status: null,
+    status: "pending",
+    ai_overview:
+      "An accumulation of uncollected refuse is visible at the kerbside. The photo is dark, so the volume is hard to judge, but the complaint itself is plausible.",
+    validity_confidence: 0.84,
+    rejection_reason: null,
+    evidence_quality: "weak",
   },
   {
     id: "demo-4",
@@ -77,6 +95,12 @@ export const DEMO_REPORTS: ReportRow[] = [
     language: "en",
     upvotes: 55,
     email_status: null,
+    status: "pending",
+    ai_overview:
+      "Temporary stalls appear to occupy most of the footpath, pushing pedestrians into traffic. The framing makes it hard to confirm how much width is blocked.",
+    validity_confidence: 0.78,
+    rejection_reason: null,
+    evidence_quality: "weak",
   },
   {
     id: "demo-5",
@@ -94,6 +118,12 @@ export const DEMO_REPORTS: ReportRow[] = [
     language: "en",
     upvotes: 38,
     email_status: "sent",
+    status: "pending",
+    ai_overview:
+      "The description of a multi-day supply outage across several streets is specific and internally consistent. No photo was attached, which is normal for a no-water complaint.",
+    validity_confidence: 0.91,
+    rejection_reason: null,
+    evidence_quality: "strong",
   },
   {
     id: "demo-6",
@@ -111,5 +141,11 @@ export const DEMO_REPORTS: ReportRow[] = [
     language: "en",
     upvotes: 21,
     email_status: null,
+    status: "pending",
+    ai_overview:
+      "Water is visibly pooling around a broken main. The Urdu description matches what the photo shows.",
+    validity_confidence: 0.87,
+    rejection_reason: null,
+    evidence_quality: "strong",
   },
 ];

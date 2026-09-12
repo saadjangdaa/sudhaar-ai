@@ -13,6 +13,13 @@ from pydantic import BaseModel, Field
 IssueType = Literal["pothole", "sewage", "garbage", "encroachment", "water"]
 Language = Literal["en", "ur"]
 MediaType = Literal["photo", "audio"]
+# One lifecycle, two owners. The validator agent sets 'rejected' or 'pending';
+# the authority desk moves 'pending' -> 'in_progress' -> 'fixed'.
+# 'rejected' rows are hidden from the public feed and from the authority desk.
+# Keep in step with web/src/lib/types.ts, web/src/lib/admin/types.ts and the
+# reports_status_check constraint in supabase/schema.sql.
+ReportStatus = Literal["pending", "in_progress", "fixed", "rejected"]
+EvidenceQuality = Literal["strong", "weak", "none"]
 
 
 class ReportRequest(BaseModel):
@@ -48,6 +55,13 @@ class ReportResponse(BaseModel):
     issue_type: IssueType
     summary: str
     confidence: float = 0.0
+
+    # validator agent
+    status: ReportStatus = "pending"
+    ai_overview: Optional[str] = None
+    validity_confidence: float = 0.0
+    rejection_reason: Optional[str] = None
+    evidence_quality: EvidenceQuality = "weak"
 
     # router
     area_tag: Optional[str] = None

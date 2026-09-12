@@ -1,4 +1,9 @@
-export type ReportStatus = "pending" | "in_progress" | "fixed";
+/**
+ * Mirrors ReportStatus in @/lib/types. "rejected" is set by the validator agent
+ * at submission time and never by this desk — a rejected report is filtered out
+ * of every query here, so the desk only ever sees the other three.
+ */
+export type ReportStatus = "pending" | "in_progress" | "fixed" | "rejected";
 
 export interface Authority {
   id: string;
