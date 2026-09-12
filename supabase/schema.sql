@@ -29,6 +29,23 @@ create index if not exists reports_upvotes_idx   on public.reports (upvotes desc
 create index if not exists reports_area_idx      on public.reports (area_tag);
 create index if not exists reports_authority_idx on public.reports (authority_assigned);
 
+-- Desk workflow. Additive and safe to re-run on an existing database.
+alter table public.reports
+  add column if not exists status text not null default 'pending';
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint where conname = 'reports_status_check'
+  ) then
+    alter table public.reports
+      add constraint reports_status_check
+      check (status in ('pending', 'in_progress', 'fixed'));
+  end if;
+end $$;
+
+create index if not exists reports_status_idx on public.reports (status, created_at desc);
+
 create table if not exists public.votes (
   id          uuid primary key default gen_random_uuid(),
   report_id   uuid not null references public.reports(id) on delete cascade,
@@ -139,3 +156,6 @@ drop policy if exists "report media is publicly readable" on storage.objects;
 create policy "report media is publicly readable"
   on storage.objects for select
   using (bucket_id = 'report-media');
+
+alter table public.reports
+  add column if not exists status text not null default 'pending';
