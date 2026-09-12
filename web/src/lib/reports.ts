@@ -13,8 +13,6 @@ export const SUPABASE_CONFIGURED = Boolean(
   process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
 );
 
-export const FEED_PAGE_SIZE = 10;
-
 export type SortKey = "top" | "new";
 
 export interface FeedFilters {
@@ -22,16 +20,6 @@ export interface FeedFilters {
   area?: string;
   authority?: string;
   issue_type?: string;
-  page?: number;
-  limit?: number;
-}
-
-export interface FeedPage {
-  reports: ReportRow[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
 }
 
 function filterDemo(rows: ReportRow[], filters: FeedFilters): ReportRow[] {
@@ -48,34 +36,16 @@ function filterDemo(rows: ReportRow[], filters: FeedFilters): ReportRow[] {
   );
 }
 
-function paginate(rows: ReportRow[], page: number, pageSize: number): FeedPage {
-  const total = rows.length;
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
-  const safePage = Math.min(Math.max(1, page), totalPages);
-  const start = (safePage - 1) * pageSize;
-  return {
-    reports: rows.slice(start, start + pageSize),
-    total,
-    page: safePage,
-    pageSize,
-    totalPages,
-  };
-}
-
-export async function getReportsPage(filters: FeedFilters = {}): Promise<FeedPage> {
-  const page = filters.page ?? 1;
-  const pageSize = filters.limit ?? FEED_PAGE_SIZE;
-
-  if (!SUPABASE_CONFIGURED) {
-    return paginate(filterDemo(DEMO_REPORTS, filters), page, pageSize);
-  }
+export async function getReports(filters: FeedFilters = {}): Promise<ReportRow[]> {
+  if (!SUPABASE_CONFIGURED) return filterDemo(DEMO_REPORTS, filters);
 
   try {
-    const client = createServerClient();
-    let query = client
+    let query = createServerClient()
       .from("reports")
-      .select("*", { count: "exact" })
-      .neq("status", "rejected");
+      .select("*")
+      // The validator agent rejected these as fake. They must never be public.
+      .neq("status", "rejected")
+      .limit(100);
 
     if (filters.area) query = query.eq("area_tag", filters.area);
     if (filters.authority) query = query.eq("authority_slug", filters.authority);
@@ -86,29 +56,12 @@ export async function getReportsPage(filters: FeedFilters = {}): Promise<FeedPag
         ? query.order("created_at", { ascending: false })
         : query.order("upvotes", { ascending: false }).order("created_at", { ascending: false });
 
-    const from = (page - 1) * pageSize;
-    const to = from + pageSize - 1;
-    const { data, error, count } = await query.range(from, to);
+    const { data, error } = await query;
     if (error) throw error;
-
-    const total = count ?? 0;
-    const totalPages = Math.max(1, Math.ceil(total / pageSize));
-    return {
-      reports: (data as ReportRow[]) ?? [],
-      total,
-      page: Math.min(page, totalPages),
-      pageSize,
-      totalPages,
-    };
+    return (data as ReportRow[]) ?? [];
   } catch {
-    return paginate(filterDemo(DEMO_REPORTS, filters), page, pageSize);
+    return filterDemo(DEMO_REPORTS, filters);
   }
-}
-
-/** Back-compat helper — returns all rows on the current page only. */
-export async function getReports(filters: FeedFilters = {}): Promise<ReportRow[]> {
-  const { reports } = await getReportsPage(filters);
-  return reports;
 }
 
 /**

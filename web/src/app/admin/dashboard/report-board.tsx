@@ -20,7 +20,6 @@ import {
 import { Input } from "../_components/ui/input";
 import { Label } from "../_components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../_components/ui/tabs";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../_components/ui/tooltip";
 
 /**
  * The validator agent rejects a report before it ever reaches an authority, and
@@ -197,22 +196,9 @@ function ComplaintCard({ report }: { report: Report }) {
             Mark fixed
           </Button>
         ) : null}
-        {report.mediaUrl ? (
-          <Button size="sm" variant="outline" onClick={onOpenRedesign}>
-            AI Re-design
-          </Button>
-        ) : (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <span className="inline-flex">
-                <Button size="sm" variant="outline" disabled>
-                  AI Re-design
-                </Button>
-              </span>
-            </TooltipTrigger>
-            <TooltipContent>Needs a photo attached</TooltipContent>
-          </Tooltip>
-        )}
+        <Button size="sm" variant="outline" onClick={onOpenRedesign}>
+          AI Re-design
+        </Button>
       </CardFooter>
       <MarkFixedDialog report={report} open={fixOpen} onOpenChange={setFixOpen} />
       <AiRedesignDialog
