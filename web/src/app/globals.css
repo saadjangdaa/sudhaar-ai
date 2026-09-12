@@ -1,26 +1,55 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --background: #f6f7f8;
+  --surface: #ffffff;
+  --surface-2: #f8f9fa;
+  --foreground: #1c1c1c;
+  --muted: #6b7280;
+  --border: #e2e5e9;
+  --brand: #e05a2b;
+  --brand-weak: #fdece5;
+  --upvote: #e05a2b;
+  --downvote: #6a8cf2;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0b0d0f;
+    --surface: #14171a;
+    --surface-2: #1a1e22;
+    --foreground: #e6e8ea;
+    --muted: #9aa4ae;
+    --border: #262b30;
+    --brand: #ff6a35;
+    --brand-weak: #2a1a13;
+    --upvote: #ff6a35;
+    --downvote: #7e9cff;
   }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-line: var(--border);
+  --color-brand: var(--brand);
+  --color-brand-weak: var(--brand-weak);
+  --color-upvote: var(--upvote);
+  --color-downvote: var(--downvote);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Urdu needs a Nastaliq-capable face or it renders as broken boxes. */
+.urdu {
+  font-family: var(--font-nastaliq), "Jameel Noori Nastaleeq", serif;
+  line-height: 2.2;
 }

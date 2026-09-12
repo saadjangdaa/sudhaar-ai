@@ -27,7 +27,10 @@ Write a complete, polite, firm complaint letter in English. Include:
 - a clear request for action within a reasonable timeframe
 - a request for an acknowledgement and a complaint reference number
 
-Do not invent names, addresses, dates or phone numbers. Sign off as
+Do not invent names, addresses, dates or phone numbers, and do not leave
+bracketed placeholders such as [Your Name], [Address] or [Date] anywhere in the
+letter — the citizen is anonymous, so omit those lines entirely. Start directly
+with the recipient authority, then the subject line. Sign off as
 "A concerned resident". Keep it under 200 words.
 """
 
@@ -39,7 +42,9 @@ DRAFTER_PROMPT_UR = """آپ کراچی کے سرکاری اداروں کے لی�
 - کارروائی کی واضح درخواست اور مناسب مہلت
 - رسید اور شکایت نمبر کی درخواست
 
-فرضی نام، پتے، تاریخیں یا فون نمبر مت لکھیں۔ آخر میں "ایک فکرمند شہری" لکھیں۔
+فرضی نام، پتے، تاریخیں یا فون نمبر مت لکھیں، اور [آپ کا نام] جیسے خالی خانے
+بھی مت چھوڑیں — شہری گمنام ہے، اس لیے یہ سطریں بالکل شامل نہ کریں۔ خط کا آغاز
+متعلقہ ادارے کے نام سے کریں، پھر موضوع کی سطر۔ آخر میں "ایک فکرمند شہری" لکھیں۔
 تقریباً 200 الفاظ سے کم رکھیں۔
 """
 
