@@ -56,35 +56,71 @@ export default function VoteBox({
     setState("down");
   }
 
-  const wrap =
-    layout === "column"
-      ? "flex w-10 shrink-0 flex-col items-center gap-0.5 py-1"
-      : "flex items-center gap-1 rounded-full bg-surface-2 px-1 py-0.5";
+  /* ── Column layout (detail page sidebar) ─────────────────────────── */
+  if (layout === "column") {
+    return (
+      <div className="flex w-10 shrink-0 flex-col items-center gap-0.5 py-1">
+        <button
+          onClick={upvote}
+          aria-label="Upvote"
+          className={`grid h-8 w-8 place-items-center rounded-lg transition-colors hover:bg-brand-weak active:scale-95 ${
+            state === "up" ? "text-upvote" : "text-muted"
+          }`}
+        >
+          <svg viewBox="0 0 20 20" className="h-4 w-4 fill-current">
+            <path d="M10 3l7 8h-4v6H7v-6H3l7-8z" />
+          </svg>
+        </button>
 
+        <span className="text-xs font-semibold tabular-nums">{count}</span>
+
+        <button
+          onClick={downvote}
+          aria-label="Downvote"
+          className={`grid h-8 w-8 place-items-center rounded-lg transition-colors hover:bg-surface-2 active:scale-95 ${
+            state === "down" ? "text-downvote" : "text-muted"
+          }`}
+        >
+          <svg viewBox="0 0 20 20" className="h-4 w-4 fill-current">
+            <path d="M10 17l-7-8h4V3h6v6h4l-7 8z" />
+          </svg>
+        </button>
+      </div>
+    );
+  }
+
+  /* ── Row layout (feed card action bar) ────────────────────────────
+     Thumb-reachable horizontal pill: upvote | count | downvote
+     Minimum tap target ≥ 44 px height (h-9 = 36 px + padding renders ~44 px).
+  ────────────────────────────────────────────────────────────────── */
   return (
-    <div className={wrap}>
+    <div className="flex h-9 items-stretch overflow-hidden rounded-full bg-surface-2">
+      {/* Upvote section */}
       <button
         onClick={upvote}
         aria-label="Upvote"
-        className={`grid h-7 w-7 place-items-center rounded hover:bg-brand-weak ${
+        className={`flex items-center gap-1.5 px-3 transition-colors hover:bg-brand-weak active:scale-95 ${
           state === "up" ? "text-upvote" : "text-muted"
         }`}
       >
-        <svg viewBox="0 0 20 20" className="h-4 w-4 fill-current">
+        <svg viewBox="0 0 20 20" className="h-3.5 w-3.5 fill-current">
           <path d="M10 3l7 8h-4v6H7v-6H3l7-8z" />
         </svg>
+        <span className="text-xs font-semibold tabular-nums">{count}</span>
       </button>
 
-      <span className="text-xs font-semibold tabular-nums">{count}</span>
+      {/* Divider */}
+      <span className="my-2 w-px bg-line" aria-hidden />
 
+      {/* Downvote section */}
       <button
         onClick={downvote}
         aria-label="Downvote"
-        className={`grid h-7 w-7 place-items-center rounded hover:bg-surface-2 ${
+        className={`flex w-9 items-center justify-center transition-colors hover:bg-surface-2 active:scale-95 ${
           state === "down" ? "text-downvote" : "text-muted"
         }`}
       >
-        <svg viewBox="0 0 20 20" className="h-4 w-4 fill-current">
+        <svg viewBox="0 0 20 20" className="h-3.5 w-3.5 fill-current">
           <path d="M10 17l-7-8h4V3h6v6h4l-7 8z" />
         </svg>
       </button>

@@ -25,7 +25,7 @@ export default async function FeedPage({ searchParams }: PageProps<"/">) {
   ]);
 
   return (
-    <main className="mx-auto grid max-w-5xl gap-6 px-4 py-6 lg:grid-cols-[1fr_300px]">
+    <main className="animate-page-enter mx-auto grid max-w-5xl gap-6 px-4 py-6 lg:grid-cols-[1fr_300px]">
       <div className="min-w-0">
         {!SUPABASE_CONFIGURED && (
           <p className="mb-4 rounded-lg border border-dashed border-line bg-surface px-4 py-3 text-sm text-muted">
@@ -35,12 +35,12 @@ export default async function FeedPage({ searchParams }: PageProps<"/">) {
           </p>
         )}
 
-        <div className="mb-4 flex flex-wrap items-center gap-2 rounded-lg border border-line bg-surface p-2">
+        <div className="mb-4 flex flex-wrap items-center gap-2 rounded-2xl border border-line bg-surface p-2">
           {SORTS.map((s) => (
             <Link
               key={s.key}
               href={s.key === "top" ? "/" : "/?sort=new"}
-              className={`rounded-full px-3 py-1.5 text-sm font-medium ${
+              className={`rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
                 sort === s.key ? "bg-brand-weak text-brand" : "text-muted hover:bg-surface-2"
               }`}
             >
@@ -92,7 +92,7 @@ export default async function FeedPage({ searchParams }: PageProps<"/">) {
       </div>
 
       <aside className="hidden space-y-4 lg:block">
-        <div className="rounded-lg border border-line bg-surface p-4">
+        <div className="rounded-2xl border border-line bg-surface p-4">
           <h2 className="font-semibold">About Sudhaar</h2>
           <p className="mt-2 text-sm text-muted">
             Report a civic issue in Karachi with a photo, a voice note, or a few words. It gets
@@ -107,7 +107,7 @@ export default async function FeedPage({ searchParams }: PageProps<"/">) {
           </Link>
         </div>
 
-        <div className="rounded-lg border border-line bg-surface p-4 text-sm">
+        <div className="rounded-2xl border border-line bg-surface p-4 text-sm">
           <h2 className="font-semibold">How routing works</h2>
           <ul className="mt-2 space-y-1.5 text-muted">
             <li>🕳️ Potholes and roads → KMC</li>
