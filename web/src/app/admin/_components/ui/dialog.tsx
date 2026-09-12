@@ -16,10 +16,10 @@ export function DialogContent({
 }: DialogPrimitive.DialogContentProps) {
   return (
     <DialogPrimitive.Portal>
-      <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-[var(--admin-ink)]/40" />
+      <DialogPrimitive.Overlay className="admin-overlay fixed inset-0 z-50" />
       <DialogPrimitive.Content
         className={cn(
-          "fixed top-1/2 left-1/2 z-50 w-[min(28rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 rounded-lg border border-[var(--admin-line)] bg-[var(--admin-card)] p-5 shadow-xl outline-none",
+          "fixed top-1/2 left-1/2 z-50 max-h-[calc(100dvh-2rem)] w-[min(28rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-lg border border-[var(--admin-line)] bg-[var(--admin-card)] p-5 shadow-xl outline-none",
           className,
         )}
         {...props}

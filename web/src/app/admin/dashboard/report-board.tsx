@@ -1,6 +1,7 @@
 "use client";
 
 import { AREA_LABELS } from "@/lib/types";
+import { uploadMedia } from "@/lib/supabase/client";
 import type { Report, ReportStatus } from "@/lib/admin/types";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
@@ -215,16 +216,41 @@ function MarkFixedDialog({
       setFailure("Upload a proof photo of the completed work.");
       return;
     }
+    if (!file) {
+      setFailure("Upload a proof photo of the completed work.");
+      return;
+    }
     setBusy(true);
     setFailure(null);
     try {
+      // The proof photo goes to Storage first and only its URL is POSTed.
+      //
+      // This used to send `preview` — the base64 data URL from FileReader —
+      // inside the JSON body. Base64 inflates a file by ~33%, so an ordinary
+      // phone photo blew past Vercel's 4.5 MB request-body cap; the platform
+      // rejected the request before the route ran, the HTML error page failed
+      // to parse as JSON, and the citizen-facing message was "Network error".
+      // Storage also means the proof survives as a real, linkable URL instead
+      // of the `proof://<id>` placeholder the route had to invent.
+      let afterImageUrl: string;
+      try {
+        afterImageUrl = await uploadMedia(file);
+      } catch (uploadError) {
+        setFailure(
+          uploadError instanceof Error
+            ? `Could not upload the proof photo: ${uploadError.message}`
+            : "Could not upload the proof photo.",
+        );
+        return;
+      }
+
       const response = await fetch("/api/admin/verify-fix", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           reportId: report.id,
           beforeImageUrl: report.mediaUrl,
-          afterImageUrl: preview,
+          afterImageUrl,
         }),
       });
       const payload = (await response.json()) as {

@@ -55,6 +55,8 @@ export async function POST(request: NextRequest) {
     oldStatus: report.status,
     newStatus: "fixed",
     changedBy: user.id,
+    // The desk uploads to Storage before calling this, so afterImageUrl is a real
+    // public URL. Guard anyway: a base64 body must never be written to a column.
     proofMediaUrl: afterImageUrl.startsWith("data:") ? `proof://${reportId}` : afterImageUrl,
     aiVerified: true,
     aiConfidence: result.confidence,

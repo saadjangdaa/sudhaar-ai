@@ -32,6 +32,20 @@
   /* No color-scheme override — the desk follows the same theme as the portal. */
 }
 
+/*
+  Modal scrim.
+
+  Written as a plain rgb() rather than Tailwind's `bg-[var(--admin-ink)]/40`.
+  In Tailwind v4 that opacity modifier compiles to
+  color-mix(in oklab, var(--admin-ink) 40%, transparent), and because
+  --admin-ink is an unregistered custom property the whole function is invalid
+  at computed-value time — the scrim silently rendered fully transparent and
+  the dialog looked like it was floating over live, still-clickable content.
+*/
+.admin-overlay {
+  background: rgb(0 0 0 / 0.45);
+}
+
 .admin-title {
   font-size: 1.5rem;
   font-weight: 600;
