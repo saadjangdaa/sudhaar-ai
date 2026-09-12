@@ -9,16 +9,6 @@ import { getSupabase } from "@/lib/supabase/client";
 
 const MAX = 1000;
 
-/**
- * Posting a reply.
- *
- * Writes straight to public.comments with the anon key, which is the exception
- * to the browser never touching Postgres — see the policy comment in
- * supabase/migrations/004_comments.sql for why upvotes need an RPC and this
- * does not. The display name comes from the device-local citizen login when one
- * exists; the CNIC stored alongside it is deliberately never read here, because
- * comments are public and reports must never carry a national ID number.
- */
 export default function CommentForm({ reportId }: { reportId: string }) {
   const router = useRouter();
   const [body, setBody] = useState("");
@@ -51,8 +41,8 @@ export default function CommentForm({ reportId }: { reportId: string }) {
   }
 
   return (
-    <form onSubmit={submit} className="mt-4">
-      <label htmlFor={`reply-${reportId}`} className="sr-only">
+    <form onSubmit={submit} className="mt-4 rounded-2xl border border-line bg-surface p-4">
+      <label htmlFor={`reply-${reportId}`} className="mb-2 block text-sm font-semibold">
         Add a reply
       </label>
       <textarea
@@ -64,7 +54,7 @@ export default function CommentForm({ reportId }: { reportId: string }) {
         }}
         rows={3}
         placeholder="Seen this too? Add what you know. اردو میں بھی لکھ سکتے ہیں۔"
-        className="w-full rounded-lg border border-line bg-background p-3 text-sm outline-none focus:border-brand"
+        className="w-full rounded-xl border border-line bg-background p-3 text-sm outline-none transition-colors focus:border-brand"
       />
 
       {error && (
@@ -73,16 +63,16 @@ export default function CommentForm({ reportId }: { reportId: string }) {
         </p>
       )}
 
-      <div className="mt-2 flex items-center justify-between gap-3">
-        <span className="text-xs text-muted">
-          {text.length > MAX - 100 ? `${MAX - text.length} characters left` : "Public reply"}
-        </span>
+      <div className="mt-3 flex items-center justify-end gap-3">
+        {text.length > MAX - 100 && (
+          <span className="text-xs text-muted">{MAX - text.length} characters left</span>
+        )}
         <button
           type="submit"
           disabled={!text || busy}
-          className="rounded-full bg-brand px-5 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
+          className="rounded-full bg-brand px-5 py-2 text-sm font-medium text-white transition-all hover:opacity-90 active:scale-95 disabled:opacity-50"
         >
-          {busy ? "Posting…" : "Reply"}
+          {busy ? "Posting…" : "Post reply"}
         </button>
       </div>
     </form>

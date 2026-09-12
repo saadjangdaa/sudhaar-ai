@@ -51,6 +51,12 @@ export function areaLabel(area?: string | null): string {
   return AREA_LABELS[area] ?? area;
 }
 
+/** Migration backfill text — not a real AI verdict; render as muted, not a summary. */
+export function isPlaceholderAiOverview(text?: string | null): boolean {
+  if (!text?.trim()) return true;
+  return /submitted before automated review|not ai-reviewed/i.test(text);
+}
+
 export function timeAgo(iso: string): string {
   const mins = Math.max(0, Math.round((Date.now() - Date.parse(iso)) / 60_000));
   if (mins < 1) return "just now";

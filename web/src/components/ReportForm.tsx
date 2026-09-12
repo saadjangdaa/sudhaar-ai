@@ -87,7 +87,7 @@ export default function ReportForm() {
   if (result) return <ResultCard report={result} />;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 rounded-lg border border-line bg-surface p-5">
+    <form onSubmit={handleSubmit} className="space-y-5 rounded-2xl border border-line bg-surface p-5 shadow-[var(--shadow-card-resting)]">
       <div>
         <label htmlFor="text" className="mb-1.5 block text-sm font-medium">
           What is the problem?

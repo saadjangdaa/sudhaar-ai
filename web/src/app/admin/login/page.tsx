@@ -1,7 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
+
+import BrandLogo from "@/components/BrandLogo";
 import { Button } from "../_components/ui/button";
 import { Input } from "../_components/ui/input";
 import { Label } from "../_components/ui/label";
@@ -89,33 +92,42 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6 py-16">
-      <p className="admin-meta tracking-wide uppercase">Sudhaar AI</p>
-      <h1 className="admin-title mt-2">Authority desk</h1>
-      <p className="admin-meta mt-2">
-        Sign in to the complaints assigned to your municipal desk. New accounts wait for a
-        super-admin to assign an authority.
-      </p>
-
-      <form onSubmit={onSubmit} className="admin-card mt-8 p-6 hover:transform-none hover:shadow-none">
-        <div className="flex gap-4 border-b border-[var(--admin-line)] pb-3">
-          <button
-            type="button"
-            className={`admin-meta ${mode === "signin" ? "text-[var(--admin-ink)]" : ""}`}
-            onClick={() => setMode("signin")}
-          >
-            Sign in
-          </button>
-          <button
-            type="button"
-            className={`admin-meta ${mode === "signup" ? "text-[var(--admin-ink)]" : ""}`}
-            onClick={() => setMode("signup")}
-          >
-            Create account
-          </button>
+    <main className="animate-page-enter mx-auto flex min-h-screen max-w-md flex-col justify-center px-4 py-12">
+      <div className="rounded-2xl border border-line bg-surface p-6 shadow-[var(--shadow-card-resting)]">
+        <div className="mb-6 flex flex-col items-center text-center">
+          <BrandLogo href="/admin/login" size="lg" showWordmark={false} />
+          <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-muted">
+            Restricted portal
+          </p>
+          <h1 className="mt-1 text-xl font-semibold">Authority sign-in</h1>
+          <p className="mt-2 text-sm text-muted">
+            For municipal desk staff only. New accounts wait for a super-admin to assign your
+            authority before the dashboard opens.
+          </p>
         </div>
 
-        <div className="mt-5 flex flex-col gap-4">
+        <form onSubmit={onSubmit} className="space-y-4">
+          <div className="flex gap-4 border-b border-line pb-3">
+            <button
+              type="button"
+              className={`text-sm font-medium transition-colors ${
+                mode === "signin" ? "text-brand" : "text-muted hover:text-foreground"
+              }`}
+              onClick={() => setMode("signin")}
+            >
+              Sign in
+            </button>
+            <button
+              type="button"
+              className={`text-sm font-medium transition-colors ${
+                mode === "signup" ? "text-brand" : "text-muted hover:text-foreground"
+              }`}
+              onClick={() => setMode("signup")}
+            >
+              Request access
+            </button>
+          </div>
+
           {mode === "signup" ? (
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="fullName">Full name</Label>
@@ -130,7 +142,7 @@ export default function AdminLoginPage() {
           ) : null}
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">Work email</Label>
             <Input
               id="email"
               type="email"
@@ -154,18 +166,14 @@ export default function AdminLoginPage() {
           </div>
 
           {error ? (
-            <p className="rounded-md bg-[var(--admin-danger-soft)] px-3 py-2 text-sm text-[var(--admin-danger)]">
-              {error}
-            </p>
+            <p className="rounded-xl bg-danger-weak px-3 py-2 text-sm text-danger">{error}</p>
           ) : null}
           {notice ? (
-            <p className="rounded-md bg-[var(--admin-accent-soft)] px-3 py-2 text-sm text-[var(--admin-accent)]">
-              {notice}
-            </p>
+            <p className="rounded-xl bg-brand-weak px-3 py-2 text-sm text-brand">{notice}</p>
           ) : null}
 
-          <Button type="submit" disabled={busy}>
-            {busy ? "Working…" : mode === "signup" ? "Request access" : "Enter desk"}
+          <Button type="submit" disabled={busy} className="w-full">
+            {busy ? "Working…" : mode === "signup" ? "Submit request" : "Enter desk"}
           </Button>
 
           {mode === "signin" ? (
@@ -173,13 +181,20 @@ export default function AdminLoginPage() {
               type="button"
               onClick={onMagicLink}
               disabled={busy || !email}
-              className="admin-meta text-left underline-offset-2 hover:underline disabled:opacity-50"
+              className="text-left text-sm text-muted underline-offset-2 transition-colors hover:text-foreground hover:underline disabled:opacity-50"
             >
               Email me a login link instead
             </button>
           ) : null}
-        </div>
-      </form>
+        </form>
+
+        <p className="mt-5 text-center text-sm text-muted">
+          Citizen reporting?{" "}
+          <Link href="/" className="text-brand hover:underline">
+            Back to public app
+          </Link>
+        </p>
+      </div>
     </main>
   );
 }

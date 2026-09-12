@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import AiOverview from "@/components/AiOverview";
+import ComplaintLetter from "@/components/ComplaintLetter";
 import { emailReport } from "@/lib/api";
 import { areaLabel, ISSUE_META } from "@/lib/format";
 import type { ReportResponse } from "@/lib/types";
@@ -67,7 +68,6 @@ function RejectedCard({ report }: { report: ReportResponse }) {
 }
 
 export default function ResultCard({ report }: { report: ReportResponse }) {
-  const [copied, setCopied] = useState(false);
   const [sending, setSending] = useState(false);
   const [sendResult, setSendResult] = useState<{ status: string; detail?: string } | null>(null);
   const meta = ISSUE_META[report.issue_type];
@@ -94,16 +94,6 @@ export default function ResultCard({ report }: { report: ReportResponse }) {
       });
     } finally {
       setSending(false);
-    }
-  }
-
-  async function copy() {
-    try {
-      await navigator.clipboard.writeText(report.complaint_text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // clipboard blocked; the text is selectable on screen anyway
     }
   }
 
@@ -134,17 +124,7 @@ export default function ResultCard({ report }: { report: ReportResponse }) {
 
       <AiOverview report={report} />
 
-      <div>
-        <p className="mb-2 text-xs uppercase tracking-wide text-muted">Complaint letter</p>
-        <pre
-          dir={isUrdu ? "rtl" : "ltr"}
-          className={`max-h-96 overflow-auto whitespace-pre-wrap rounded-lg border border-line bg-background p-4 text-sm ${
-            isUrdu ? "urdu text-right" : "font-sans"
-          }`}
-        >
-          {report.complaint_text}
-        </pre>
-      </div>
+      <ComplaintLetter text={report.complaint_text} isUrdu={isUrdu} />
 
       <div className="flex flex-wrap gap-2">
         <button
@@ -157,12 +137,6 @@ export default function ResultCard({ report }: { report: ReportResponse }) {
             : sendResult?.status === "sent"
               ? `✓ Sent to ${report.authority_slug.toUpperCase()}`
               : `📨 Send to ${report.authority_slug.toUpperCase()}`}
-        </button>
-        <button
-          onClick={copy}
-          className="rounded-full border border-line px-4 py-2 text-sm hover:bg-surface-2"
-        >
-          {copied ? "✓ Copied" : "📋 Copy letter"}
         </button>
         <a
           href={mailto}

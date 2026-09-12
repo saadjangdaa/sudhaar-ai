@@ -4,19 +4,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import BrandLogo from "@/components/BrandLogo";
 import { formatCnic, isValidCnic, normalizeCnic, setUser } from "@/lib/auth";
 import { AREA_LABELS, AREAS } from "@/lib/types";
 
-/**
- * Sample citizen login — demo only.
- *
- * No password, no server-side identity: reporting and upvoting stay anonymous by
- * design (see src/lib/session.ts). This exists so the portal has a signed-in
- * state to show. Real authority authentication is a separate portal, under /admin.
- *
- * The CNIC collected here is stored on this device and nowhere else — see the
- * note at the top of src/lib/auth.ts for why it must never reach public.reports.
- */
 export default function LoginPage() {
   const router = useRouter();
   const [name, setName] = useState("");
@@ -42,16 +33,13 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="mx-auto max-w-md px-4 py-12">
-      <div className="rounded-lg border border-line bg-surface p-6">
-        <div className="mb-6 text-center">
-          <span className="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-full bg-brand text-lg font-semibold text-white">
-            S
-          </span>
-          <h1 className="text-xl font-semibold">Log in to Sudhaar</h1>
+    <main className="animate-page-enter mx-auto max-w-md px-4 py-12">
+      <div className="rounded-2xl border border-line bg-surface p-6 shadow-[var(--shadow-card-resting)]">
+        <div className="mb-6 flex flex-col items-center text-center">
+          <BrandLogo href="/" size="lg" showWordmark={false} />
+          <h1 className="mt-3 text-xl font-semibold">Log in to Sudhaar</h1>
           <p className="mt-1 text-sm text-muted">
-            Demo login — your details are stored on this device only. Reporting works
-            without it.
+            Demo login — your details stay on this device only. Reporting works without it.
           </p>
         </div>
 
@@ -65,7 +53,7 @@ export default function LoginPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
-              className="w-full rounded-lg border border-line bg-background p-3 text-sm outline-none focus:border-brand"
+              className="w-full rounded-xl border border-line bg-background p-3 text-sm outline-none transition-colors focus:border-brand"
             />
           </div>
 
@@ -85,11 +73,10 @@ export default function LoginPage() {
               autoComplete="off"
               aria-describedby="cnic-help"
               aria-invalid={error ? true : undefined}
-              className="w-full rounded-lg border border-line bg-background p-3 text-sm tabular-nums outline-none focus:border-brand"
+              className="w-full rounded-xl border border-line bg-background p-3 text-sm tabular-nums outline-none transition-colors focus:border-brand"
             />
             <p id="cnic-help" className="mt-1.5 text-xs text-muted">
-              Stored on this device only. It is never attached to your complaints and
-              never leaves your browser.
+              Stored on this device only. Never attached to complaints or sent anywhere.
             </p>
           </div>
 
@@ -101,7 +88,7 @@ export default function LoginPage() {
               id="area"
               value={area}
               onChange={(e) => setArea(e.target.value)}
-              className="w-full rounded-lg border border-line bg-background p-3 text-sm outline-none focus:border-brand"
+              className="w-full rounded-xl border border-line bg-background p-3 text-sm outline-none transition-colors focus:border-brand"
             >
               <option value="">Select an area</option>
               {AREAS.map((a) => (
@@ -113,14 +100,14 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <p role="alert" className="rounded-lg bg-danger-weak px-3 py-2 text-sm text-danger">
+            <p role="alert" className="rounded-xl bg-danger-weak px-3 py-2 text-sm text-danger">
               {error}
             </p>
           )}
 
           <button
             type="submit"
-            className="w-full rounded-full bg-brand px-6 py-3 font-medium text-white hover:opacity-90"
+            className="w-full rounded-full bg-brand px-6 py-3 font-medium text-white transition-all hover:opacity-90 active:scale-95"
           >
             Continue
           </button>
@@ -129,7 +116,7 @@ export default function LoginPage() {
         <p className="mt-5 text-center text-sm text-muted">
           Are you an authority?{" "}
           <Link href="/admin/login" className="text-brand hover:underline">
-            Authority portal
+            Authority sign-in
           </Link>
         </p>
       </div>

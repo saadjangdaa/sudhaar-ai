@@ -2,12 +2,6 @@ import { timeAgo } from "@/lib/format";
 import type { CommentRow } from "@/lib/types";
 import CommentForm from "./CommentForm";
 
-/**
- * Urdu and English sit in the same thread, so direction is decided per comment
- * rather than per page. Anything containing Arabic-script letters is rendered
- * right-to-left with the Nastaliq stack; a Roman-Urdu reply stays left-to-right,
- * which is what its author typed.
- */
 function isRtl(text: string): boolean {
   return /[\u0600-\u06FF\u0750-\u077F]/.test(text);
 }
@@ -25,9 +19,9 @@ export default function CommentThread({
 }) {
   return (
     <section className="mt-6">
-      <h2 className="text-sm font-semibold">
+      <h2 className="text-base font-semibold">
         {comments.length === 0
-          ? "No replies yet"
+          ? "Neighbour replies"
           : `${comments.length} ${comments.length === 1 ? "reply" : "replies"} from neighbours`}
       </h2>
 
@@ -36,7 +30,7 @@ export default function CommentThread({
           {comments.map((c) => {
             const rtl = isRtl(c.body);
             return (
-              <li key={c.id} className="flex gap-3 rounded-lg border border-line bg-surface p-3">
+              <li key={c.id} className="flex gap-3 rounded-2xl border border-line bg-surface p-3">
                 <span
                   aria-hidden
                   className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full bg-brand-weak text-sm font-semibold text-brand"

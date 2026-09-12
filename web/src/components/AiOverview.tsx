@@ -1,4 +1,4 @@
-import { confidenceLabel } from "@/lib/format";
+import { confidenceLabel, isPlaceholderAiOverview } from "@/lib/format";
 import type { EvidenceQuality, ReportStatus } from "@/lib/types";
 
 const EVIDENCE_NOTE: Record<EvidenceQuality, string> = {
@@ -7,14 +7,6 @@ const EVIDENCE_NOTE: Record<EvidenceQuality, string> = {
   none: "No usable evidence attached",
 };
 
-/**
- * Only the validator fields, each optional.
- *
- * ReportRow and ReportResponse disagree on nullability — a row has `string | null`
- * where the response has `string | null | undefined` — and a row read before the
- * migration ran has none of them. Accepting the loose shape here means one
- * component serves the feed, the detail page and the submit result.
- */
 export interface AiOverviewFields {
   ai_overview?: string | null;
   validity_confidence?: number | null;
@@ -23,14 +15,6 @@ export interface AiOverviewFields {
   rejection_reason?: string | null;
 }
 
-/**
- * The validator agent's own words, shown on the post.
- *
- * Deliberately labelled as machine-written and styled apart from the platform's
- * brand colour: a reader must never mistake an AI judgement for Sudhaar's
- * editorial position, and an authority reading this needs to see the confidence
- * behind a verdict, not just the verdict.
- */
 export default function AiOverview({
   report,
   compact = false,
@@ -38,10 +22,20 @@ export default function AiOverview({
   report: AiOverviewFields;
   compact?: boolean;
 }) {
-  const text = report.status === "rejected" ? report.rejection_reason : report.ai_overview;
+  const rejected = report.status === "rejected";
+  const text = rejected ? report.rejection_reason : report.ai_overview;
+  const unreviewed = !rejected && isPlaceholderAiOverview(text);
+
+  if (unreviewed) {
+    return (
+      <p className="mt-2 inline-flex items-center rounded-full bg-surface-2 px-2.5 py-1 text-[11px] font-medium text-muted">
+        Not yet reviewed
+      </p>
+    );
+  }
+
   if (!text) return null;
 
-  const rejected = report.status === "rejected";
   const accent = rejected ? "border-danger/40 bg-danger-weak" : "border-ai/30 bg-ai-weak";
   const dot = rejected ? "text-danger" : "text-ai";
 
@@ -55,7 +49,7 @@ export default function AiOverview({
   }
 
   return (
-    <section className={`mt-4 rounded-lg border ${accent} p-4`}>
+    <section className={`mt-4 rounded-2xl border ${accent} p-4`}>
       <div className="flex flex-wrap items-center gap-2">
         <h3 className={`text-sm font-semibold ${dot}`}>
           {rejected ? "⛔ Rejected by automated review" : "✨ AI overview"}

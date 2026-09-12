@@ -1,9 +1,10 @@
 import Link from "next/link";
 
+import FeedPagination from "@/components/FeedPagination";
 import ReportCard from "@/components/ReportCard";
 import { getCommentCounts } from "@/lib/comments";
 import { ISSUE_META } from "@/lib/format";
-import { getReports, SUPABASE_CONFIGURED, type SortKey } from "@/lib/reports";
+import { getReportsPage, SUPABASE_CONFIGURED, type SortKey } from "@/lib/reports";
 
 export const dynamic = "force-dynamic";
 
@@ -16,19 +17,20 @@ export default async function FeedPage({ searchParams }: PageProps<"/">) {
   const params = await searchParams;
   const sort = (params.sort === "new" ? "new" : "top") as SortKey;
   const issueType = typeof params.issue_type === "string" ? params.issue_type : undefined;
+  const page = Math.max(1, Number(params.page) || 1);
 
-  // Both reads at once: the counts do not depend on which reports came back,
-  // and the feed should not pay two round trips in series for them.
-  const [reports, commentCounts] = await Promise.all([
-    getReports({ sort, issue_type: issueType }),
+  const [feed, commentCounts] = await Promise.all([
+    getReportsPage({ sort, issue_type: issueType, page }),
     getCommentCounts(),
   ]);
+
+  const queryBase = { sort: sort === "top" ? undefined : sort, issue_type: issueType };
 
   return (
     <main className="animate-page-enter mx-auto grid max-w-5xl gap-6 px-4 py-6 lg:grid-cols-[1fr_300px]">
       <div className="min-w-0">
         {!SUPABASE_CONFIGURED && (
-          <p className="mb-4 rounded-lg border border-dashed border-line bg-surface px-4 py-3 text-sm text-muted">
+          <p className="mb-4 rounded-2xl border border-dashed border-line bg-surface px-4 py-3 text-sm text-muted">
             Showing sample data — add <code className="font-mono">NEXT_PUBLIC_SUPABASE_URL</code> and{" "}
             <code className="font-mono">NEXT_PUBLIC_SUPABASE_ANON_KEY</code> to{" "}
             <code className="font-mono">web/.env.local</code> to read live reports.
@@ -40,8 +42,8 @@ export default async function FeedPage({ searchParams }: PageProps<"/">) {
             <Link
               key={s.key}
               href={s.key === "top" ? "/" : "/?sort=new"}
-              className={`rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
-                sort === s.key ? "bg-brand-weak text-brand" : "text-muted hover:bg-surface-2"
+              className={`interactive-chip rounded-full px-3 py-1.5 text-sm font-medium ${
+                sort === s.key ? "bg-brand-weak text-brand" : "text-muted"
               }`}
             >
               {s.icon} {s.label}
@@ -51,8 +53,8 @@ export default async function FeedPage({ searchParams }: PageProps<"/">) {
           <div className="ml-auto flex flex-wrap gap-1">
             <Link
               href={sort === "new" ? "/?sort=new" : "/"}
-              className={`rounded-full px-2.5 py-1 text-xs ${
-                issueType ? "text-muted hover:bg-surface-2" : "bg-surface-2 font-medium"
+              className={`interactive-chip rounded-full px-2.5 py-1 text-xs ${
+                issueType ? "text-muted" : "bg-surface-2 font-medium"
               }`}
             >
               All
@@ -61,8 +63,8 @@ export default async function FeedPage({ searchParams }: PageProps<"/">) {
               <Link
                 key={key}
                 href={`/?sort=${sort}&issue_type=${key}`}
-                className={`rounded-full px-2.5 py-1 text-xs ${
-                  issueType === key ? "bg-surface-2 font-medium" : "text-muted hover:bg-surface-2"
+                className={`interactive-chip rounded-full px-2.5 py-1 text-xs ${
+                  issueType === key ? "bg-surface-2 font-medium" : "text-muted"
                 }`}
               >
                 {meta.icon} {meta.label}
@@ -72,23 +74,30 @@ export default async function FeedPage({ searchParams }: PageProps<"/">) {
         </div>
 
         <div className="space-y-3">
-          {reports.length === 0 ? (
-            <p className="rounded-lg border border-dashed border-line bg-surface p-8 text-center text-sm text-muted">
+          {feed.reports.length === 0 ? (
+            <p className="rounded-2xl border border-dashed border-line bg-surface p-8 text-center text-sm text-muted">
               No reports yet.{" "}
               <Link href="/submit" className="text-brand hover:underline">
                 Be the first to report an issue.
               </Link>
             </p>
           ) : (
-            reports.map((report) => (
+            feed.reports.map((report) => (
               <ReportCard
                 key={report.id}
                 report={report}
-                commentCount={commentCounts.get(report.id)}
+                commentCount={commentCounts.get(report.id) ?? 0}
               />
             ))
           )}
         </div>
+
+        <FeedPagination
+          page={feed.page}
+          totalPages={feed.totalPages}
+          basePath="/"
+          searchParams={queryBase}
+        />
       </div>
 
       <aside className="hidden space-y-4 lg:block">
@@ -101,7 +110,7 @@ export default async function FeedPage({ searchParams }: PageProps<"/">) {
           </p>
           <Link
             href="/submit"
-            className="mt-4 block rounded-full bg-brand px-4 py-2 text-center text-sm font-medium text-white hover:opacity-90"
+            className="mt-4 block rounded-full bg-brand px-4 py-2 text-center text-sm font-medium text-white transition-opacity hover:opacity-90 active:scale-95"
           >
             Report an issue
           </Link>

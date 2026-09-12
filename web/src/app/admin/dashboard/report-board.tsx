@@ -20,6 +20,7 @@ import {
 import { Input } from "../_components/ui/input";
 import { Label } from "../_components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../_components/ui/tabs";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../_components/ui/tooltip";
 
 /**
  * The validator agent rejects a report before it ever reaches an authority, and
@@ -83,7 +84,12 @@ export function ReportBoard({ reports }: { reports: Report[] }) {
           return (
             <TabsTrigger key={item.id} value={item.id}>
               {item.label}
-              <span className="ml-2 text-[11px] text-[var(--admin-muted)]">{count}</span>
+              <span
+                className="ml-2 text-[11px] text-[var(--admin-muted)]"
+                aria-label={`${count} complaints`}
+              >
+                {count}
+              </span>
             </TabsTrigger>
           );
         })}
@@ -191,9 +197,16 @@ function ComplaintCard({ report }: { report: Report }) {
             Mark fixed
           </Button>
         ) : null}
-        <Button size="sm" variant="outline" onClick={onOpenRedesign}>
-          AI Re-design
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="inline-flex">
+              <Button size="sm" variant="outline" disabled>
+                AI Re-design
+              </Button>
+            </span>
+          </TooltipTrigger>
+          <TooltipContent>Coming soon</TooltipContent>
+        </Tooltip>
       </CardFooter>
       <MarkFixedDialog report={report} open={fixOpen} onOpenChange={setFixOpen} />
       <AiRedesignDialog

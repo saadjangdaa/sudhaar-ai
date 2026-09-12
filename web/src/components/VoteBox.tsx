@@ -98,7 +98,7 @@ export default function VoteBox({
       {/* Upvote section */}
       <button
         onClick={upvote}
-        aria-label="Upvote"
+        aria-label={`Upvote, ${count} votes`}
         className={`flex items-center gap-1.5 px-3 transition-colors hover:bg-brand-weak active:scale-95 ${
           state === "up" ? "text-upvote" : "text-muted"
         }`}
