@@ -34,7 +34,11 @@ def db() -> Client:
 # --------------------------------------------------------------------------
 
 def insert_report(row: dict[str, Any]) -> dict[str, Any]:
-    result = db().table("reports").insert(row).execute()
+    # PostgREST rejects inserts that name columns missing from the schema cache,
+    # even when the value is null. Omit None so older DBs without optional
+    # migrations (e.g. accuracy_m from 005) still accept reports.
+    clean = {key: value for key, value in row.items() if value is not None}
+    result = db().table("reports").insert(clean).execute()
     if not result.data:
         raise RuntimeError("report insert returned no row")
     return result.data[0]
