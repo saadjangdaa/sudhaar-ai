@@ -16,17 +16,17 @@ export function DialogContent({
 }: DialogPrimitive.DialogContentProps) {
   return (
     <DialogPrimitive.Portal>
-      <DialogPrimitive.Overlay className="admin-overlay fixed inset-0 z-50" />
+      <DialogPrimitive.Overlay className="admin-overlay fixed inset-0 z-50 backdrop-blur-sm" />
       <DialogPrimitive.Content
         className={cn(
-          "fixed top-1/2 left-1/2 z-50 max-h-[calc(100dvh-2rem)] w-[min(28rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-lg border border-[var(--admin-line)] bg-[var(--admin-card)] p-5 shadow-xl outline-none",
+          "fixed top-1/2 left-1/2 z-[60] max-h-[calc(100dvh-2rem)] w-[min(28rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl border border-[var(--border,#e2e5e9)] bg-[var(--surface,#ffffff)] p-5 text-[var(--foreground,#1c1c1c)] shadow-2xl outline-none",
           className,
         )}
         {...props}
       >
         {children}
         <DialogPrimitive.Close
-          className="absolute top-3 right-3 rounded p-1 text-[var(--admin-muted)] hover:bg-[var(--admin-accent-soft)] hover:text-[var(--admin-ink)]"
+          className="absolute top-3 right-3 rounded-md p-1.5 text-[var(--muted,#6b7280)] hover:bg-[var(--surface-2,#f8f9fa)] hover:text-[var(--foreground,#1c1c1c)]"
           aria-label="Close"
         >
           <X className="size-4" />
@@ -46,6 +46,9 @@ export function DialogTitle({ className, ...props }: DialogPrimitive.DialogTitle
 
 export function DialogDescription({ className, ...props }: DialogPrimitive.DialogDescriptionProps) {
   return (
-    <DialogPrimitive.Description className={cn("admin-meta mt-1", className)} {...props} />
+    <DialogPrimitive.Description
+      className={cn("mt-1 text-sm leading-5 text-[var(--muted,#6b7280)]", className)}
+      {...props}
+    />
   );
 }

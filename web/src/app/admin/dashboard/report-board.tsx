@@ -4,13 +4,14 @@ import { AREA_LABELS } from "@/lib/types";
 import { uploadMedia } from "@/lib/supabase/client";
 import type { Report, ReportStatus } from "@/lib/admin/types";
 import { useRouter } from "next/navigation";
-import { useMemo, useState, useTransition } from "react";
+import { useMemo, useState, useTransition, type ReactNode } from "react";
 import { startWork } from "./actions";
 import { Badge } from "../_components/ui/badge";
 import { Button } from "../_components/ui/button";
 import { Card, CardContent, CardFooter } from "../_components/ui/card";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -232,71 +233,135 @@ function AiRedesignDialog({
   state: RedesignState;
   onRetry: () => void;
 }) {
+  const loading = state.status === "loading";
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[min(36rem,calc(100vw-2rem))]">
-        <DialogHeader>
-          <DialogTitle>AI re-design</DialogTitle>
-          <DialogDescription>
-            A generated preview of the fix and a recommended approach for the crew.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="flex flex-col gap-4">
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <p className="admin-meta mb-1">Reported</p>
+      <DialogContent className="w-[min(42rem,calc(100vw-2rem))] gap-0 overflow-hidden p-0">
+        <div className="border-b border-[var(--border,#e2e5e9)] px-5 pt-5 pb-4">
+          <DialogHeader className="mb-0">
+            <DialogTitle className="flex items-center gap-2">
+              <span className="inline-flex size-7 items-center justify-center rounded-full bg-[var(--ai-weak,#eeebfb)] text-sm">
+                ✨
+              </span>
+              AI re-design
+            </DialogTitle>
+            <DialogDescription className="mt-2 max-w-prose">
+              Compare the reported issue with an AI-generated preview of the fix, plus a crew
+              briefing you can share on site.
+            </DialogDescription>
+          </DialogHeader>
+        </div>
+
+        <div className="space-y-4 px-5 py-4">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <ComparisonPanel label="Before · Reported" tone="muted">
               {report.mediaUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={report.mediaUrl}
                   alt="Reported issue"
-                  className="h-40 w-full rounded-md object-cover"
+                  className="h-52 w-full object-cover"
                 />
               ) : (
-                <div className="flex h-40 items-center justify-center rounded-md bg-[var(--admin-accent-soft)] text-[var(--admin-muted)]">
-                  <p className="admin-meta">No photo</p>
-                </div>
+                <EmptyPhoto label="No citizen photo attached" />
               )}
-            </div>
-            <div>
-              <p className="admin-meta mb-1">AI re-design</p>
+            </ComparisonPanel>
+
+            <ComparisonPanel label="After · AI preview" tone="ai">
               {state.status === "done" ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={state.imageDataUrl}
                   alt="AI-generated preview of the issue fixed"
-                  className="h-40 w-full rounded-md object-cover"
+                  className="h-52 w-full object-cover"
                 />
               ) : (
-                <div className="flex h-40 items-center justify-center rounded-md border border-dashed border-[var(--admin-line)] text-center text-[var(--admin-muted)]">
-                  <p className="admin-meta">
-                    {state.status === "loading" ? "Generating…" : "Not generated yet"}
-                  </p>
+                <div className="flex h-52 flex-col items-center justify-center gap-2 bg-[var(--surface-2,#f8f9fa)] px-4 text-center">
+                  {loading ? (
+                    <>
+                      <span className="size-8 animate-pulse rounded-full bg-[var(--ai-weak,#eeebfb)]" />
+                      <p className="text-sm font-medium text-[var(--foreground,#1c1c1c)]">
+                        Generating preview…
+                      </p>
+                      <p className="text-xs text-[var(--muted,#6b7280)]">
+                        This usually takes a few seconds.
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-sm text-[var(--muted,#6b7280)]">Preview not generated yet</p>
+                  )}
                 </div>
               )}
-            </div>
+            </ComparisonPanel>
           </div>
+
           {state.status === "error" ? (
-            <p className="rounded-md bg-[var(--admin-danger-soft)] px-3 py-2 text-sm text-[var(--admin-danger)]">
+            <p className="rounded-lg border border-[var(--danger,#9b2c2c)]/20 bg-[var(--danger-weak,#fdecec)] px-3 py-2.5 text-sm text-[var(--danger,#9b2c2c)]">
               {state.message}
             </p>
           ) : null}
+
           {state.status === "done" ? (
-            <div>
-              <p className="admin-meta mb-1">Recommended fix</p>
-              <p className="text-sm leading-5">{state.solution}</p>
+            <div className="rounded-lg border border-[var(--border,#e2e5e9)] bg-[var(--surface-2,#f8f9fa)]">
+              <div className="border-b border-[var(--border,#e2e5e9)] px-4 py-2.5">
+                <p className="text-xs font-semibold tracking-wide text-[var(--muted,#6b7280)] uppercase">
+                  Recommended fix
+                </p>
+              </div>
+              <p className="max-h-44 overflow-y-auto px-4 py-3 text-sm leading-6 text-[var(--foreground,#1c1c1c)]">
+                {state.solution}
+              </p>
             </div>
           ) : null}
-          <Button onClick={onRetry} disabled={state.status === "loading"}>
-            {state.status === "loading"
-              ? "Generating…"
-              : state.status === "done"
-                ? "Regenerate"
-                : "Generate"}
+        </div>
+
+        <div className="flex flex-col-reverse gap-2 border-t border-[var(--border,#e2e5e9)] bg-[var(--surface-2,#f8f9fa)] px-5 py-4 sm:flex-row sm:justify-end">
+          <DialogClose asChild>
+            <Button variant="outline" type="button">
+              Close
+            </Button>
+          </DialogClose>
+          <Button onClick={onRetry} disabled={loading} type="button">
+            {loading ? "Generating…" : state.status === "done" ? "Regenerate preview" : "Generate preview"}
           </Button>
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function ComparisonPanel({
+  label,
+  tone,
+  children,
+}: {
+  label: string;
+  tone: "muted" | "ai";
+  children: ReactNode;
+}) {
+  const labelClass =
+    tone === "ai"
+      ? "bg-[var(--ai-weak,#eeebfb)] text-[var(--ai,#5b4bc4)]"
+      : "bg-[var(--surface-2,#f8f9fa)] text-[var(--muted,#6b7280)]";
+
+  return (
+    <figure className="overflow-hidden rounded-lg border border-[var(--border,#e2e5e9)] bg-[var(--surface,#ffffff)] shadow-sm">
+      <figcaption
+        className={`border-b border-[var(--border,#e2e5e9)] px-3 py-2 text-[11px] font-semibold tracking-wide uppercase ${labelClass}`}
+      >
+        {label}
+      </figcaption>
+      {children}
+    </figure>
+  );
+}
+
+function EmptyPhoto({ label }: { label: string }) {
+  return (
+    <div className="flex h-52 items-center justify-center bg-[var(--surface-2,#f8f9fa)] px-4 text-center">
+      <p className="text-sm text-[var(--muted,#6b7280)]">{label}</p>
+    </div>
   );
 }
 
