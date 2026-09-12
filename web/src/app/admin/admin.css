@@ -1,0 +1,81 @@
+/*
+  Admin desk theme — light only. Do not reuse root --background/--foreground;
+  those follow prefers-color-scheme and would leak a half-dark skin in here.
+*/
+.admin-shell {
+  --admin-paper: #eef1ef;
+  --admin-ink: #18211d;
+  --admin-muted: #5c6b64;
+  --admin-line: #cfd8d3;
+  --admin-card: #fbfcfb;
+  --admin-accent: #1f5c4c;
+  --admin-accent-hover: #17483c;
+  --admin-accent-fg: #f3faf7;
+  --admin-accent-soft: #e5f0ec;
+  --admin-pending: #9a6700;
+  --admin-progress: #1d4f86;
+  --admin-fixed: #1f5c4c;
+  --admin-danger: #9b2c2c;
+  --admin-danger-soft: #fdecec;
+
+  min-height: 100vh;
+  background: var(--admin-paper);
+  color: var(--admin-ink);
+  color-scheme: light;
+  font-family: var(--font-admin-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+.admin-title {
+  font-family: var(--font-admin-display), ui-serif, Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.admin-card-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.admin-meta {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--admin-muted);
+}
+
+.admin-card {
+  background: var(--admin-card);
+  border: 1px solid var(--admin-line);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  transition: box-shadow 160ms ease, transform 160ms ease;
+}
+
+.admin-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgb(24 33 29 / 0.08);
+}
+
+.admin-stamp {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1.5px solid currentColor;
+  padding: 0.2rem 0.45rem;
+  transform: rotate(-5deg);
+  background: var(--admin-card);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-card {
+    transition: none;
+  }
+  .admin-card:hover {
+    transform: none;
+  }
+}
