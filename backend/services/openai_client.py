@@ -104,7 +104,8 @@ class OpenAIClient:
         return {"type": "image_url", "image_url": {"url": url}}
 
     def _fetch_image(self, url: str) -> tuple[bytes, str]:
-        with httpx.Client(timeout=30.0) as client:
+        headers = {"User-Agent": "CivicIssueRoutingAgent/1.0"}
+        with httpx.Client(timeout=30.0, headers=headers) as client:
             response = client.get(url)
             response.raise_for_status()
             mime_type = response.headers.get("content-type", "image/jpeg").split(";")[0]

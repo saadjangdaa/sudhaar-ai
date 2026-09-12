@@ -100,6 +100,50 @@ class VerificationState(TypedDict):
     tamper_reason: NotRequired[str | None]
 
 
+IssueTypeLiteral = str
+LanguageLiteral = str
+MediaTypeLiteral = str
+
+
+class LegacyReportRequest(BaseModel):
+    """Frontend contract: POST /api/report (mirrors web/src/lib/types.ts)."""
+
+    raw_text: str | None = None
+    media_url: str | None = None
+    media_type: str | None = None
+    area_input: str | None = None
+    language: str = "en"
+
+
+class LegacyReportResponse(BaseModel):
+    """Frontend contract: response for POST /api/report."""
+
+    id: str
+    created_at: str
+    media_url: str | None = None
+    media_type: str | None = None
+    raw_text: str | None = None
+    transcript: str | None = None
+    issue_type: str
+    summary: str
+    confidence: float = 0.0
+    area_tag: str | None = None
+    authority_slug: str
+    authority_assigned: str
+    authority_email: str | None = None
+    routing_reason: str | None = None
+    complaint_text: str
+    language: str = "en"
+    upvotes: int = 0
+    email_status: str | None = None
+
+
+class EmailResponse(BaseModel):
+    report_id: str
+    email_status: str
+    detail: str | None = None
+
+
 class ProcessReportRequest(BaseModel):
     image_url: str
     text: str
