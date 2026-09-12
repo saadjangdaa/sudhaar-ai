@@ -13,9 +13,11 @@ def classify_issue(state: CivicState) -> CivicState:
     extra_parts.append(f"Location: {state['location']}")
     extra_text = "\n".join(extra_parts)
 
+    images = [state["image_url"]] if state.get("image_url") else []
+
     result: ClassifierOutput = get_openai_client().generate_json(
         system_prompt=CLASSIFIER_SYSTEM_PROMPT,
-        images=[state["image_url"]],
+        images=images,
         extra_text=extra_text,
         output_model=ClassifierOutput,
     )
