@@ -87,9 +87,9 @@ export default function ReportForm() {
   if (result) return <ResultCard report={result} />;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 rounded-2xl border border-line bg-surface p-5 shadow-[var(--shadow-card-resting)]">
+    <form onSubmit={handleSubmit} className="panel space-y-5">
       <div>
-        <label htmlFor="text" className="mb-1.5 block text-sm font-medium">
+        <label htmlFor="text" className="font-display mb-1.5 block text-sm font-semibold">
           What is the problem?
         </label>
         <textarea
@@ -98,7 +98,7 @@ export default function ReportForm() {
           onChange={(e) => setText(e.target.value)}
           rows={4}
           placeholder="e.g. Huge pothole outside my gate, water collects in it every night"
-          className="w-full resize-y rounded-lg border border-line bg-background p-3 text-sm outline-none focus:border-brand"
+          className="w-full resize-y rounded-xl border border-line bg-[var(--canvas)] px-4 py-3 text-sm outline-none transition-colors focus:border-brand"
         />
       </div>
 
@@ -120,7 +120,7 @@ export default function ReportForm() {
             value={area}
             onChange={(e) => setArea(e.target.value)}
             placeholder="e.g. near Hassan Square, Gulshan"
-            className="w-full rounded-lg border border-line bg-background p-3 text-sm outline-none focus:border-brand"
+            className="w-full rounded-xl border border-line bg-[var(--canvas)] px-4 py-3 text-sm outline-none transition-colors focus:border-brand"
           />
           <datalist id="areas">
             {AREAS.map((a) => (
@@ -151,16 +151,10 @@ export default function ReportForm() {
       </div>
 
       {error && (
-        <p className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-600 dark:text-red-400">
-          {error}
-        </p>
+        <p className="rounded-xl bg-danger-weak px-4 py-3 text-sm text-danger">{error}</p>
       )}
 
-      <button
-        type="submit"
-        disabled={busy}
-        className="w-full rounded-full bg-brand px-6 py-3 font-medium text-white transition hover:opacity-90 disabled:opacity-60"
-      >
+      <button type="submit" disabled={busy} className="btn btn-primary w-full !py-3.5 disabled:opacity-50">
         {busy ? `${STAGES[stage]}…` : "Submit complaint"}
       </button>
 

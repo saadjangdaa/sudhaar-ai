@@ -1,10 +1,5 @@
 import Link from "next/link";
 
-/**
- * Single brand mark used in the header and auth pages.
- * The circle "S" is decorative; the link label is always "Sudhaar" for
- * screen readers so we never announce "S Sudhaar" as "SSudhaar".
- */
 export default function BrandLogo({
   href = "/",
   size = "md",
@@ -14,26 +9,32 @@ export default function BrandLogo({
   size?: "sm" | "md" | "lg";
   showWordmark?: boolean;
 }) {
-  const sizes = {
-    sm: "h-8 w-8 text-sm",
-    md: "h-10 w-10 text-base",
-    lg: "h-12 w-12 text-lg",
-  };
+  const mark = {
+    sm: "h-8 w-8 text-[13px]",
+    md: "h-9 w-9 text-sm",
+    lg: "h-11 w-11 text-base",
+  }[size];
 
   return (
     <Link
       href={href}
       aria-label="Sudhaar home"
-      className="inline-flex items-center gap-2 font-semibold transition-opacity hover:opacity-90 active:scale-95"
+      className="group inline-flex items-center gap-2.5 transition-opacity hover:opacity-90"
     >
       <span
         aria-hidden
-        className={`grid shrink-0 place-items-center rounded-full bg-brand font-bold text-white ${sizes[size]}`}
+        className={`grid shrink-0 place-items-center rounded-xl bg-gradient-to-br from-[var(--brand)] to-[color-mix(in_oklab,var(--brand)_60%,#6366f1)] font-display font-bold text-white shadow-[var(--shadow-glow)] transition-transform group-active:scale-95 ${mark}`}
       >
         S
       </span>
       {showWordmark && (
-        <span className={size === "sm" ? "hidden sm:inline" : "inline"}>Sudhaar</span>
+        <span
+          className={`font-display font-bold tracking-tight ${
+            size === "sm" ? "hidden text-[15px] sm:inline" : "text-lg"
+          }`}
+        >
+          Sudhaar
+        </span>
       )}
     </Link>
   );

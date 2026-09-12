@@ -28,44 +28,38 @@ export default function AiOverview({
 
   if (unreviewed) {
     return (
-      <p className="mt-2 inline-flex items-center rounded-full bg-surface-2 px-2.5 py-1 text-[11px] font-medium text-muted">
+      <span className="inline-flex rounded-md bg-[var(--surface-hover)] px-2 py-0.5 font-mono text-[10px] uppercase tracking-wide text-muted">
         Not yet reviewed
-      </p>
+      </span>
     );
   }
 
   if (!text) return null;
 
-  const accent = rejected ? "border-danger/40 bg-danger-weak" : "border-ai/30 bg-ai-weak";
-  const dot = rejected ? "text-danger" : "text-ai";
+  const accent = rejected ? "border-danger/30 bg-danger-weak" : "border-ai/25 bg-ai-weak";
+  const label = rejected ? "Rejected" : "AI overview";
 
   if (compact) {
     return (
-      <p className={`mt-2 rounded-md border ${accent} px-2.5 py-1.5 text-xs leading-relaxed`}>
-        <span className={`font-semibold ${dot}`}>{rejected ? "⛔ AI: " : "✨ AI overview: "}</span>
-        <span className="text-foreground/80">{text}</span>
+      <p className={`rounded-lg border px-3 py-2 text-xs leading-relaxed ${accent}`}>
+        <span className="font-display font-semibold text-ai">{label}: </span>
+        <span className="text-foreground/75">{text}</span>
       </p>
     );
   }
 
   return (
-    <section className={`mt-4 rounded-2xl border ${accent} p-4`}>
+    <section className={`rounded-xl border p-4 ${accent}`}>
       <div className="flex flex-wrap items-center gap-2">
-        <h3 className={`text-sm font-semibold ${dot}`}>
-          {rejected ? "⛔ Rejected by automated review" : "✨ AI overview"}
-        </h3>
-        <span className="text-[11px] text-muted">
+        <h3 className="font-display text-sm font-bold text-ai">{label}</h3>
+        <span className="font-mono text-[10px] uppercase tracking-wide text-muted">
           {confidenceLabel(report.validity_confidence)}
           {report.evidence_quality ? ` · ${EVIDENCE_NOTE[report.evidence_quality]}` : ""}
         </span>
       </div>
-
       <p className="mt-2 text-sm leading-relaxed text-foreground/85">{text}</p>
-
-      <p className="mt-3 text-[11px] leading-relaxed text-muted">
-        Written by Sudhaar&rsquo;s complaint-validation agent from the photo and text
-        submitted. It is an automated assessment, not a verified finding
-        {rejected ? " — a person can still review this decision." : "."}
+      <p className="mt-3 text-xs text-muted">
+        Automated assessment from submitted photo and text — not a verified finding.
       </p>
     </section>
   );

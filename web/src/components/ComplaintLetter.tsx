@@ -2,10 +2,6 @@
 
 import { useState } from "react";
 
-/**
- * The formal complaint letter — styled as a document, not debug output.
- * Copy button is the primary action; the letter body uses readable prose typography.
- */
 export default function ComplaintLetter({
   text,
   isUrdu = false,
@@ -21,35 +17,31 @@ export default function ComplaintLetter({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Letter remains selectable if clipboard is blocked.
+      /* selectable on screen */
     }
   }
 
   return (
-    <section className="mt-4 overflow-hidden rounded-2xl border border-line bg-surface shadow-[var(--shadow-card-resting)]">
-      <div className="flex items-center justify-between gap-3 border-b border-line bg-surface-2 px-4 py-3">
+    <section className="panel mt-5 overflow-hidden !p-0">
+      <div className="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
         <div>
-          <h2 className="text-sm font-semibold">Complaint letter</h2>
-          <p className="text-xs text-muted">Ready to send to the assigned authority</p>
+          <h2 className="font-display font-bold">Complaint letter</h2>
+          <p className="mt-0.5 text-xs text-muted">Ready to send to the assigned authority</p>
         </div>
-        <button
-          type="button"
-          onClick={copy}
-          className="shrink-0 rounded-full border border-line bg-surface px-4 py-2 text-sm font-medium transition-all hover:border-brand/40 hover:bg-brand-weak hover:text-brand active:scale-95"
-        >
-          {copied ? "✓ Copied" : "Copy letter"}
+        <button type="button" onClick={copy} className="btn btn-soft shrink-0">
+          {copied ? "Copied" : "Copy letter"}
         </button>
       </div>
 
       <div
         dir={isUrdu ? "rtl" : "ltr"}
-        className={`max-h-[28rem] overflow-auto px-5 py-4 text-[15px] leading-relaxed text-foreground/90 ${
+        className={`max-h-[28rem] overflow-auto px-5 py-5 text-[15px] leading-[1.75] text-foreground/90 ${
           isUrdu ? "urdu text-right" : ""
         }`}
       >
         {text.split("\n").map((paragraph, i) =>
           paragraph.trim() ? (
-            <p key={i} className={i > 0 ? "mt-3" : undefined}>
+            <p key={i} className={i > 0 ? "mt-4" : undefined}>
               {paragraph}
             </p>
           ) : (

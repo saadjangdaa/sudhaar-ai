@@ -28,87 +28,90 @@ export default async function ComplaintPage({ params }: PageProps<"/c/[id]">) {
   const hasPhoto = !!report.media_url && report.media_type === "photo";
 
   return (
-    <main className="animate-page-enter mx-auto max-w-3xl px-4 py-6">
-      <Link href="/" className="text-sm text-muted transition-colors hover:text-foreground">
-        ← Back to feed
+    <div className="animate-page-enter page-column px-4 py-6 sm:px-6 sm:py-8">
+      <Link href="/" className="btn btn-ghost !px-0 text-sm">
+        ← Feed
       </Link>
 
-      <article className="mt-3 overflow-hidden rounded-2xl border border-line bg-surface shadow-[var(--shadow-card-resting)]">
+      <article className="feed-card mt-4">
         {hasPhoto ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={report.media_url!} alt="" className="aspect-video w-full object-cover" />
+          <img src={report.media_url!} alt="" className="aspect-[4/3] w-full object-cover sm:aspect-video" />
         ) : (
-          <div className="flex aspect-video w-full flex-col items-center justify-center gap-2 bg-surface-2 text-muted">
-            <span className="text-4xl" aria-hidden>
+          <div className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-2 bg-[var(--surface-hover)] sm:aspect-video">
+            <span className="text-4xl opacity-60" aria-hidden>
               {meta?.icon ?? "📍"}
             </span>
-            <span className="text-sm font-medium">No photo attached</span>
+            <span className="font-mono text-xs uppercase tracking-wide text-muted">No photo</span>
           </div>
         )}
 
-        <div className="flex gap-3 p-4">
+        <div className="flex gap-4 p-5 sm:p-6">
           <VoteBox reportId={report.id} upvotes={report.upvotes} />
 
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted">
-              <span className="font-medium text-foreground">k/{areaLabel(report.area_tag)}</span>
-              <span>·</span>
-              <span>{timeAgo(report.created_at)}</span>
+          <div className="min-w-0 flex-1 space-y-3">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
+              <span className="font-display text-xs font-bold text-brand">
+                k/{areaLabel(report.area_tag)}
+              </span>
+              <span className="font-mono text-[11px] text-muted">{timeAgo(report.created_at)}</span>
               {meta && (
-                <span className={`rounded-md px-2 py-0.5 font-medium ${meta.tone}`}>
+                <span className={`rounded-md px-2 py-0.5 text-[11px] font-semibold ${meta.tone}`}>
                   {meta.icon} {meta.label}
                 </span>
               )}
-              <span className={`rounded-md px-2 py-0.5 font-medium ${status.tone}`}>
+              <span className={`rounded-md px-2 py-0.5 text-[11px] font-semibold ${status.tone}`}>
                 {status.icon} {status.label}
               </span>
               {!rejected && report.email_status === "sent" && (
-                <span className="rounded-full bg-ok-weak px-2 py-0.5 font-medium text-ok">
-                  ✓ Sent to authority
+                <span className="rounded-md bg-ok-weak px-2 py-0.5 text-[11px] font-semibold text-ok">
+                  Sent to authority
                 </span>
               )}
             </div>
 
             <h1
-              className={`mt-2 text-xl font-semibold leading-snug ${isUrdu ? "urdu" : ""}`}
+              className={`font-display text-xl font-bold leading-snug tracking-tight sm:text-2xl ${
+                isUrdu ? "urdu" : ""
+              }`}
               dir={isUrdu ? "rtl" : "ltr"}
             >
               {report.summary || report.raw_text || "Untitled report"}
             </h1>
 
             {report.media_url && report.media_type === "audio" && (
-              <audio controls src={report.media_url} className="mt-3 w-full" />
+              <audio controls src={report.media_url} className="w-full" />
             )}
 
             <AiOverview report={report} />
 
             {rejected ? (
-              <div className="mt-4 rounded-2xl border border-line bg-surface-2 p-4 text-sm">
-                <p className="font-semibold">This report is not published</p>
-                <p className="mt-1 text-muted">
-                  It did not pass automated review, so it does not appear on the public feed
-                  and was not sent to any authority. Submit again with a clearer photo and a
-                  short description of what is wrong.
+              <div className="panel border-danger/30">
+                <p className="font-display font-bold">Not published</p>
+                <p className="mt-2 text-sm text-muted">
+                  This report did not pass automated review. Submit again with a clearer photo
+                  and description.
                 </p>
-                <Link
-                  href="/submit"
-                  className="mt-3 inline-block rounded-full bg-brand px-4 py-2 text-xs font-semibold text-white transition-opacity hover:opacity-90 active:scale-95"
-                >
+                <Link href="/submit" className="btn btn-primary mt-4 inline-flex">
                   Submit again
                 </Link>
               </div>
             ) : (
-              <div className="mt-4 rounded-2xl bg-surface-2 p-4 text-sm">
-                <p className="text-xs uppercase tracking-wide text-muted">Routed to</p>
-                <p className="mt-1 font-semibold">{report.authority_assigned || "Not yet routed"}</p>
+              <div className="panel !py-3">
+                <p className="font-mono text-[10px] uppercase tracking-wide text-muted">Routed to</p>
+                <p className="font-display mt-1 font-bold">
+                  {report.authority_assigned || "Not yet routed"}
+                </p>
               </div>
             )}
 
             {report.raw_text && (
-              <div className="mt-4">
-                <p className="text-xs uppercase tracking-wide text-muted">Reported as</p>
+              <div>
+                <p className="font-mono text-[10px] uppercase tracking-wide text-muted">
+                  Reported as
+                </p>
                 <p
-                  className={`mt-1 text-sm ${isUrdu ? "urdu" : ""}`}
+                  className={`mt-1.5 text-sm leading-relaxed ${isUrdu ? "urdu" : ""}`}
                   dir={isUrdu ? "rtl" : "ltr"}
                 >
                   {report.raw_text}
@@ -122,10 +125,10 @@ export default async function ComplaintPage({ params }: PageProps<"/c/[id]">) {
       </article>
 
       {!rejected && (
-        <div id="replies">
+        <div id="replies" className="mt-8">
           <CommentThread reportId={report.id} comments={comments} />
         </div>
       )}
-    </main>
+    </div>
   );
 }

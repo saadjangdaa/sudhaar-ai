@@ -41,8 +41,8 @@ export default function CommentForm({ reportId }: { reportId: string }) {
   }
 
   return (
-    <form onSubmit={submit} className="mt-4 rounded-2xl border border-line bg-surface p-4">
-      <label htmlFor={`reply-${reportId}`} className="mb-2 block text-sm font-semibold">
+    <form onSubmit={submit} className="panel mt-4">
+      <label htmlFor={`reply-${reportId}`} className="font-display text-sm font-bold">
         Add a reply
       </label>
       <textarea
@@ -54,24 +54,20 @@ export default function CommentForm({ reportId }: { reportId: string }) {
         }}
         rows={3}
         placeholder="Seen this too? Add what you know. اردو میں بھی لکھ سکتے ہیں۔"
-        className="w-full rounded-xl border border-line bg-background p-3 text-sm outline-none transition-colors focus:border-brand"
+        className="mt-3 w-full resize-none rounded-xl border border-line bg-[var(--canvas)] px-4 py-3 text-sm outline-none transition-colors focus:border-brand"
       />
 
       {error && (
-        <p role="alert" className="mt-2 rounded-lg bg-danger-weak px-3 py-2 text-sm text-danger">
+        <p role="alert" className="mt-3 rounded-xl bg-danger-weak px-4 py-3 text-sm text-danger">
           {error}
         </p>
       )}
 
-      <div className="mt-3 flex items-center justify-end gap-3">
+      <div className="mt-4 flex items-center justify-end gap-3">
         {text.length > MAX - 100 && (
-          <span className="text-xs text-muted">{MAX - text.length} characters left</span>
+          <span className="font-mono text-xs text-muted">{MAX - text.length} left</span>
         )}
-        <button
-          type="submit"
-          disabled={!text || busy}
-          className="rounded-full bg-brand px-5 py-2 text-sm font-medium text-white transition-all hover:opacity-90 active:scale-95 disabled:opacity-50"
-        >
+        <button type="submit" disabled={!text || busy} className="btn btn-primary disabled:opacity-40">
           {busy ? "Posting…" : "Post reply"}
         </button>
       </div>

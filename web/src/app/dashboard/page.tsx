@@ -1,10 +1,9 @@
 import Link from "next/link";
 
-import FeedPagination from "@/components/FeedPagination";
 import ReportCard from "@/components/ReportCard";
 import { getCommentCounts } from "@/lib/comments";
 import { ISSUE_META } from "@/lib/format";
-import { getReportsPage, SUPABASE_CONFIGURED } from "@/lib/reports";
+import { getReports, SUPABASE_CONFIGURED } from "@/lib/reports";
 import { AREA_LABELS, AREAS } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -31,47 +30,53 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
   const area = typeof params.area === "string" ? params.area : undefined;
   const authority = typeof params.authority === "string" ? params.authority : undefined;
   const issueType = typeof params.issue_type === "string" ? params.issue_type : undefined;
-  const page = Math.max(1, Number(params.page) || 1);
 
   const current = { area, authority, issue_type: issueType };
-  const [feed, commentCounts] = await Promise.all([
-    getReportsPage({ ...current, sort: "new", page }),
+  const [reports, commentCounts] = await Promise.all([
+    getReports({ ...current, sort: "new" }),
     getCommentCounts(),
   ]);
 
-  const totalUpvotes = feed.reports.reduce((sum, r) => sum + r.upvotes, 0);
-  const sent = feed.reports.filter((r) => r.email_status === "sent").length;
+  const totalUpvotes = reports.reduce((sum, r) => sum + r.upvotes, 0);
+  const sent = reports.filter((r) => r.email_status === "sent").length;
 
   const stats = [
-    { label: "On this page", value: feed.reports.length },
-    { label: "Total reports", value: feed.total },
-    { label: "Upvotes (page)", value: totalUpvotes },
-    { label: "Sent (page)", value: sent },
+    { label: "Reports", value: reports.length },
+    { label: "Upvotes", value: totalUpvotes },
+    { label: "Sent", value: sent },
+    { label: "Areas", value: new Set(reports.map((r) => r.area_tag)).size },
   ];
 
   return (
-    <main className="animate-page-enter mx-auto max-w-5xl px-4 py-6">
-      <h1 className="text-2xl font-semibold">Dashboard</h1>
-      <p className="mt-1 text-sm text-muted">
-        Every reported issue in Karachi, filterable by area, authority, and type.
-      </p>
+    <div className="animate-page-enter wide-column px-4 py-6 sm:px-6 sm:py-8">
+      <header>
+        <p className="font-mono text-[11px] font-medium uppercase tracking-widest text-brand">
+          Overview
+        </p>
+        <h1 className="font-display mt-1 text-2xl font-bold tracking-tight sm:text-3xl">
+          City dashboard
+        </h1>
+        <p className="mt-1.5 text-sm text-muted">
+          Filter reports by area, authority, and issue type.
+        </p>
+      </header>
 
       {!SUPABASE_CONFIGURED && (
-        <p className="mt-4 rounded-2xl border border-dashed border-line bg-surface px-4 py-3 text-sm text-muted">
-          Showing sample data — Supabase env vars are not set.
+        <p className="panel mt-4 border-dashed text-sm text-muted">
+          Sample data — Supabase env vars are not set.
         </p>
       )}
 
-      <div className="mt-5 grid gap-3 sm:grid-cols-4">
+      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((s) => (
-          <div key={s.label} className="rounded-2xl border border-line bg-surface p-4">
-            <p className="text-2xl font-semibold tabular-nums">{s.value}</p>
-            <p className="text-sm text-muted">{s.label}</p>
+          <div key={s.label} className="panel !py-4">
+            <p className="font-display text-3xl font-bold tabular-nums">{s.value}</p>
+            <p className="mt-1 font-mono text-xs uppercase tracking-wide text-muted">{s.label}</p>
           </div>
         ))}
       </div>
 
-      <div className="mt-5 space-y-3 rounded-2xl border border-line bg-surface p-4">
+      <div className="panel mt-5 space-y-4">
         <Filter
           label="Type"
           options={Object.entries(ISSUE_META).map(([k, m]) => [k, `${m.icon} ${m.label}`])}
@@ -95,13 +100,11 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
         />
       </div>
 
-      <div className="mt-5 space-y-3">
-        {feed.reports.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-line bg-surface p-10 text-center text-muted">
-            No reports match these filters.
-          </p>
+      <div className="mt-6 space-y-4 sm:space-y-5">
+        {reports.length === 0 ? (
+          <div className="panel py-12 text-center text-muted">No reports match these filters.</div>
         ) : (
-          feed.reports.map((report) => (
+          reports.map((report) => (
             <ReportCard
               key={report.id}
               report={report}
@@ -111,14 +114,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
           ))
         )}
       </div>
-
-      <FeedPagination
-        page={feed.page}
-        totalPages={feed.totalPages}
-        basePath="/dashboard"
-        searchParams={current}
-      />
-    </main>
+    </div>
   );
 }
 
@@ -137,22 +133,17 @@ function Filter({
 }) {
   return (
     <div className="flex flex-wrap items-center gap-1.5">
-      <span className="w-20 shrink-0 text-xs uppercase tracking-wide text-muted">{label}</span>
-      <Link
-        href={clearHref}
-        className={`interactive-chip rounded-full px-2.5 py-1 text-xs ${
-          active ? "text-muted" : "bg-surface-2 font-medium"
-        }`}
-      >
+      <span className="w-20 shrink-0 font-mono text-[11px] uppercase tracking-wide text-muted">
+        {label}
+      </span>
+      <Link href={clearHref} className={`pill ${active ? "" : "pill-active"}`}>
         All
       </Link>
       {options.map(([value, text]) => (
         <Link
           key={value}
           href={hrefFor(value)}
-          className={`interactive-chip rounded-full px-2.5 py-1 text-xs ${
-            active === value ? "bg-brand-weak font-medium text-brand" : "text-muted"
-          }`}
+          className={`pill ${active === value ? "pill-active" : ""}`}
         >
           {text}
         </Link>

@@ -5,12 +5,6 @@ import VoteBox from "@/components/VoteBox";
 import { areaLabel, ISSUE_META, STATUS_META, timeAgo } from "@/lib/format";
 import type { ReportRow } from "@/lib/types";
 
-/**
- * Single card component for every citizen report surface (feed + dashboard).
- *
- * Layout is identical on every instance:
- *   photo (or placeholder) → meta row → title → AI strip → authority → actions
- */
 export default function ReportCard({
   report,
   commentCount = 0,
@@ -24,51 +18,59 @@ export default function ReportCard({
   const title = report.summary || report.raw_text || "Untitled report";
   const status = STATUS_META[report.status ?? "pending"];
   const hasPhoto = !!report.media_url && report.media_type === "photo";
-  const photoHeight = variant === "compact" ? "h-36" : "aspect-video";
 
   return (
-    <article className="interactive-card group overflow-hidden rounded-2xl border border-line bg-surface shadow-[var(--shadow-card-resting)]">
-      {/* Photo — always present; placeholder when none uploaded */}
-      <Link href={`/c/${report.id}`} className={`relative block overflow-hidden ${photoHeight}`}>
+    <article className="feed-card group">
+      <Link
+        href={`/c/${report.id}`}
+        className={`relative block overflow-hidden ${variant === "compact" ? "h-44" : "aspect-[4/3] sm:aspect-video"}`}
+      >
         {hasPhoto ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={report.media_url!}
             alt=""
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+            className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
           />
         ) : (
-          <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-surface-2 text-muted">
-            <span className="text-3xl" aria-hidden>
+          <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-[var(--surface-hover)]">
+            <span className="text-3xl opacity-60" aria-hidden>
               {meta?.icon ?? "📍"}
             </span>
-            <span className="text-xs font-medium">No photo attached</span>
+            <span className="font-mono text-[11px] uppercase tracking-wider text-muted">
+              No photo
+            </span>
           </div>
         )}
       </Link>
 
-      <div className={`px-4 ${variant === "compact" ? "pb-3 pt-2.5" : "pb-3 pt-3"}`}>
-        {/* Meta: area · time · issue badge · status badge — always the same row */}
-        <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[11px] text-muted">
-          <span className="font-semibold text-foreground/80">k/{areaLabel(report.area_tag)}</span>
-          <span aria-hidden>·</span>
-          <span>{timeAgo(report.created_at)}</span>
+      <div className="space-y-2.5 p-4 sm:p-5">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
+          <Link
+            href={`/c/${report.id}`}
+            className="font-display text-xs font-bold tracking-wide text-brand hover:underline"
+          >
+            k/{areaLabel(report.area_tag)}
+          </Link>
+          <span className="font-mono text-[11px] text-muted">{timeAgo(report.created_at)}</span>
           {meta && (
-            <span className={`rounded-md px-1.5 py-0.5 font-semibold ${meta.tone}`}>
+            <span className={`rounded-md px-2 py-0.5 text-[11px] font-semibold ${meta.tone}`}>
               {meta.icon} {meta.label}
             </span>
           )}
-          <span className={`rounded-md px-1.5 py-0.5 font-semibold ${status.tone}`}>
+          <span className={`rounded-md px-2 py-0.5 text-[11px] font-semibold ${status.tone}`}>
             {status.icon} {status.label}
           </span>
           {report.email_status === "sent" && (
-            <span className="rounded-full bg-ok-weak px-2 py-0.5 font-semibold text-ok">✓ Sent</span>
+            <span className="rounded-md bg-ok-weak px-2 py-0.5 text-[11px] font-semibold text-ok">
+              Sent
+            </span>
           )}
         </div>
 
-        <Link href={`/c/${report.id}`} className="mt-1.5 block">
+        <Link href={`/c/${report.id}`} className="block">
           <h2
-            className={`line-clamp-2 text-[15px] font-semibold leading-snug hover:text-brand ${
+            className={`font-display line-clamp-2 text-[16px] font-bold leading-snug tracking-tight transition-colors group-hover:text-brand sm:text-[17px] ${
               report.language === "ur" ? "urdu" : ""
             }`}
             dir={report.language === "ur" ? "rtl" : "ltr"}
@@ -79,25 +81,22 @@ export default function ReportCard({
 
         {variant === "full" && <AiOverview report={report} compact />}
 
-        <p className="mt-2 flex items-center gap-1 truncate text-[11px] text-muted">
-          <span aria-hidden>📮</span>
-          <span className="truncate">{report.authority_assigned || "Unrouted"}</span>
+        <p className="truncate font-mono text-[11px] text-muted">
+          → {report.authority_assigned || "Unrouted"}
         </p>
 
-        {/* Action row — icon + labeled counts */}
-        <div className="mt-3 flex items-center gap-2.5">
+        <div className="flex items-center gap-2 pt-1">
           <VoteBox reportId={report.id} upvotes={report.upvotes} layout="row" />
 
           <Link
             href={`/c/${report.id}#replies`}
-            aria-label={`${commentCount} ${commentCount === 1 ? "reply" : "replies"}`}
-            className="interactive-chip flex h-9 items-center gap-1.5 rounded-full bg-surface-2 px-3 text-xs text-muted hover:text-foreground"
+            aria-label={`${commentCount} replies`}
+            className="pill gap-1.5 !py-2 font-mono text-xs tabular-nums"
           >
             <svg viewBox="0 0 20 20" className="h-3.5 w-3.5 fill-current" aria-hidden>
               <path d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7z" />
             </svg>
-            <span className="font-semibold tabular-nums">{commentCount}</span>
-            <span className="hidden sm:inline">{commentCount === 1 ? "reply" : "replies"}</span>
+            {commentCount}
           </Link>
         </div>
       </div>

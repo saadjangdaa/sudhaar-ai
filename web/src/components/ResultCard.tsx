@@ -19,7 +19,7 @@ import type { ReportResponse } from "@/lib/types";
  */
 function RejectedCard({ report }: { report: ReportResponse }) {
   return (
-    <div className="space-y-4 rounded-lg border border-danger/40 bg-surface p-5">
+    <div className="panel space-y-5 border-danger/30">
       <div className="flex flex-wrap items-center gap-2">
         <span className="rounded-full bg-danger-weak px-3 py-1 text-sm font-medium text-danger">
           ⛔ Not filed
@@ -44,22 +44,13 @@ function RejectedCard({ report }: { report: ReportResponse }) {
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <Link
-          href="/submit"
-          className="rounded-full bg-brand px-4 py-2 text-sm font-medium text-white hover:opacity-90"
-        >
+        <Link href="/submit" className="btn btn-primary">
           Try again
         </Link>
-        <Link
-          href={`/c/${report.id}`}
-          className="rounded-full border border-line px-4 py-2 text-sm hover:bg-surface-2"
-        >
+        <Link href={`/c/${report.id}`} className="btn btn-outline">
           View decision
         </Link>
-        <Link
-          href="/"
-          className="rounded-full border border-line px-4 py-2 text-sm hover:bg-surface-2"
-        >
+        <Link href="/" className="btn btn-ghost">
           Back to feed
         </Link>
       </div>
@@ -100,7 +91,7 @@ export default function ResultCard({ report }: { report: ReportResponse }) {
   if (rejected) return <RejectedCard report={report} />;
 
   return (
-    <div className="space-y-4 rounded-lg border border-line bg-surface p-5">
+    <div className="panel space-y-5">
       <div className="flex flex-wrap items-center gap-2">
         <span className="rounded-full bg-ok-weak px-3 py-1 text-sm font-medium text-ok">
           ✓ Complaint filed
@@ -130,7 +121,7 @@ export default function ResultCard({ report }: { report: ReportResponse }) {
         <button
           onClick={send}
           disabled={sending || sendResult?.status === "sent"}
-          className="rounded-full bg-brand px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-60"
+          className="btn btn-primary disabled:opacity-50"
         >
           {sending
             ? "Sending…"
@@ -138,19 +129,13 @@ export default function ResultCard({ report }: { report: ReportResponse }) {
               ? `✓ Sent to ${report.authority_slug.toUpperCase()}`
               : `📨 Send to ${report.authority_slug.toUpperCase()}`}
         </button>
-        <a
-          href={mailto}
-          className="rounded-full border border-line px-4 py-2 text-sm hover:bg-surface-2"
-        >
-          ✉️ Open in mail app
+        <a href={mailto} className="btn btn-outline">
+          Open in mail app
         </a>
-        <Link
-          href={`/c/${report.id}`}
-          className="rounded-full border border-line px-4 py-2 text-sm hover:bg-surface-2"
-        >
+        <Link href={`/c/${report.id}`} className="btn btn-outline">
           View post
         </Link>
-        <Link href="/" className="rounded-full border border-line px-4 py-2 text-sm hover:bg-surface-2">
+        <Link href="/" className="btn btn-ghost">
           Back to feed
         </Link>
       </div>

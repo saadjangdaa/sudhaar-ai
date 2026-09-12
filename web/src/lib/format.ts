@@ -1,7 +1,7 @@
 import { AREA_LABELS, type IssueType, type ReportStatus } from "@/lib/types";
 
 export const ISSUE_META: Record<IssueType, { label: string; icon: string; tone: string }> = {
-  pothole: { label: "Pothole", icon: "🕳️", tone: "bg-amber-500/15 text-amber-700 dark:text-amber-300" },
+  pothole: { label: "Pothole", icon: "🕳️", tone: "bg-violet-500/15 text-violet-400" },
   sewage: { label: "Sewage", icon: "🚱", tone: "bg-lime-600/15 text-lime-700 dark:text-lime-300" },
   garbage: { label: "Garbage", icon: "🗑️", tone: "bg-emerald-600/15 text-emerald-700 dark:text-emerald-300" },
   encroachment: { label: "Encroachment", icon: "🚧", tone: "bg-fuchsia-600/15 text-fuchsia-700 dark:text-fuchsia-300" },
