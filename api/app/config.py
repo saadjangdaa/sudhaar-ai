@@ -1,7 +1,9 @@
 """Runtime configuration. Every value comes from the environment — see .env.example."""
 
+import os
 from functools import lru_cache
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -39,6 +41,17 @@ class Settings(BaseSettings):
     # The seeded authority emails are placeholders — never mail real departments
     # from a hackathon build. Clearing this is a deliberate decision.
     email_override_to: str = ""
+
+    @model_validator(mode="after")
+    def apply_env_fallbacks(self) -> "Settings":
+        if not self.supabase_url:
+            self.supabase_url = os.environ.get("NEXT_PUBLIC_SUPABASE_URL", "")
+        if not self.supabase_service_role_key:
+            self.supabase_service_role_key = os.environ.get(
+                "SUPABASE_SERVICE_ROLE_KEY",
+                os.environ.get("NEXT_PUBLIC_SUPABASE_ANON_KEY", ""),
+            )
+        return self
 
     @property
     def cors_origins(self) -> list[str]:
