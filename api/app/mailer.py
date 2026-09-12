@@ -47,7 +47,11 @@ def _build_message(report: dict, authority: dict, recipient: str) -> EmailMessag
     if report.get("media_url"):
         body_parts.append(f"\n\nAttached evidence: {report['media_url']}")
 
-    body_parts.append(f"\n\nSubmitted via Karachi Civic Reports · report id {report['id']}")
+    complaint_link = f"{settings.web_base_url.rstrip('/')}/c/{report['id']}"
+    body_parts.append(
+        f"\n\nView this complaint online: {complaint_link}"
+        f"\n\nSubmitted via Sudhaar · report id {report['id']}"
+    )
 
     # utf-8 so Urdu survives the wire
     msg.set_content("\n".join(body_parts), charset="utf-8")

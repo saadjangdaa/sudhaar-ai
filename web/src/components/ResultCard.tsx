@@ -3,17 +3,36 @@
 import Link from "next/link";
 import { useState } from "react";
 
+import { emailReport } from "@/lib/api";
 import { areaLabel, ISSUE_META } from "@/lib/format";
 import type { ReportResponse } from "@/lib/types";
 
 export default function ResultCard({ report }: { report: ReportResponse }) {
   const [copied, setCopied] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [sendResult, setSendResult] = useState<{ status: string; detail?: string } | null>(null);
   const meta = ISSUE_META[report.issue_type];
   const isUrdu = report.language === "ur";
 
   const mailto = `mailto:${report.authority_email ?? ""}?subject=${encodeURIComponent(
     `${meta?.label ?? "Civic"} complaint — ${areaLabel(report.area_tag)}`,
   )}&body=${encodeURIComponent(report.complaint_text)}`;
+
+  async function send() {
+    if (sending) return;
+    setSending(true);
+    try {
+      const res = await emailReport(report.id);
+      setSendResult({ status: res.email_status, detail: res.detail });
+    } catch (err) {
+      setSendResult({
+        status: "failed",
+        detail: err instanceof Error ? err.message : "Could not reach the server",
+      });
+    } finally {
+      setSending(false);
+    }
+  }
 
   async function copy() {
     try {
@@ -62,6 +81,17 @@ export default function ResultCard({ report }: { report: ReportResponse }) {
 
       <div className="flex flex-wrap gap-2">
         <button
+          onClick={send}
+          disabled={sending || sendResult?.status === "sent"}
+          className="rounded-full bg-brand px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-60"
+        >
+          {sending
+            ? "Sending…"
+            : sendResult?.status === "sent"
+              ? `✓ Sent to ${report.authority_slug.toUpperCase()}`
+              : `📨 Send to ${report.authority_slug.toUpperCase()}`}
+        </button>
+        <button
           onClick={copy}
           className="rounded-full border border-line px-4 py-2 text-sm hover:bg-surface-2"
         >
@@ -69,9 +99,9 @@ export default function ResultCard({ report }: { report: ReportResponse }) {
         </button>
         <a
           href={mailto}
-          className="rounded-full bg-brand px-4 py-2 text-sm font-medium text-white hover:opacity-90"
+          className="rounded-full border border-line px-4 py-2 text-sm hover:bg-surface-2"
         >
-          ✉️ Send to {report.authority_slug.toUpperCase()}
+          ✉️ Open in mail app
         </a>
         <Link
           href={`/c/${report.id}`}
@@ -83,6 +113,14 @@ export default function ResultCard({ report }: { report: ReportResponse }) {
           Back to feed
         </Link>
       </div>
+
+      {sendResult && sendResult.status !== "sent" && (
+        <p className="rounded-lg border border-line bg-surface-2 p-3 text-sm text-muted">
+          {sendResult.status === "skipped"
+            ? "Auto-send is off on the server. Use “Open in mail app” to send it yourself."
+            : `Could not send: ${sendResult.detail ?? "unknown error"}`}
+        </p>
+      )}
     </div>
   );
 }

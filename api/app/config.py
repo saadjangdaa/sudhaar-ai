@@ -25,6 +25,9 @@ class Settings(BaseSettings):
 
     allowed_origins: str = "http://localhost:3000"
 
+    # Used to build a link back to the complaint in the email body.
+    web_base_url: str = "http://localhost:3000"
+
     # --- email (off by default; see app/mailer.py) ---
     enable_email: bool = False
     smtp_host: str = "smtp.gmail.com"
