@@ -9,6 +9,11 @@ class ReportState(TypedDict, total=False):
     media_url: Optional[str]
     media_type: Optional[str]
     area_input: Optional[str]
+    # Optional GPS pin. Read by the drafter, which puts it in the letter; the
+    # router deliberately ignores it, see the note in router.py.
+    latitude: Optional[float]
+    longitude: Optional[float]
+    accuracy_m: Optional[float]
     language: str
 
     # --- ingest ---

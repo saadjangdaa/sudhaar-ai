@@ -20,6 +20,9 @@ export const DEMO_REPORTS: ReportRow[] = [
     issue_type: "pothole",
     summary: "Large water-filled pothole on the service lane causing bike accidents",
     area_tag: "gulshan_e_iqbal",
+    latitude: 24.9207,
+    longitude: 67.0947,
+    accuracy_m: 18,
     authority_slug: "kmc",
     authority_assigned: "Karachi Metropolitan Corporation",
     routing_reason:
@@ -45,6 +48,9 @@ export const DEMO_REPORTS: ReportRow[] = [
     issue_type: "sewage",
     summary: "Sewage line overflowing into the market road for three days",
     area_tag: "lyari",
+    latitude: 24.8827,
+    longitude: 66.9924,
+    accuracy_m: 22,
     authority_slug: "kwsb",
     authority_assigned: "Karachi Water & Sewerage Board",
     routing_reason:
@@ -70,6 +76,9 @@ export const DEMO_REPORTS: ReportRow[] = [
     issue_type: "garbage",
     summary: "Uncollected garbage pile outside the residential block for a week",
     area_tag: "north_nazimabad",
+    latitude: 24.937,
+    longitude: 67.0359,
+    accuracy_m: 15,
     authority_slug: "sswmb",
     authority_assigned: "Sindh Solid Waste Management Board",
     routing_reason:
@@ -95,6 +104,9 @@ export const DEMO_REPORTS: ReportRow[] = [
     issue_type: "encroachment",
     summary: "Footpath fully encroached by shop extensions forcing pedestrians onto the road",
     area_tag: "saddar",
+    latitude: 24.8547,
+    longitude: 67.0134,
+    accuracy_m: 35,
     authority_slug: "tma",
     authority_assigned: "Town Municipal Administration",
     routing_reason:
@@ -120,6 +132,9 @@ export const DEMO_REPORTS: ReportRow[] = [
     issue_type: "water",
     summary: "No piped water supply to the lane since Monday, tankers being bought privately",
     area_tag: "clifton",
+    latitude: 24.8138,
+    longitude: 67.03,
+    accuracy_m: 20,
     authority_slug: "cbc",
     authority_assigned: "Cantonment Board Clifton",
     routing_reason:
@@ -145,6 +160,9 @@ export const DEMO_REPORTS: ReportRow[] = [
     issue_type: "pothole",
     summary: "Broken carriageway near the flyover throwing up dust across the junction",
     area_tag: "korangi",
+    latitude: 24.8321,
+    longitude: 67.1387,
+    accuracy_m: 25,
     authority_slug: "kmc",
     authority_assigned: "Karachi Metropolitan Corporation",
     routing_reason:

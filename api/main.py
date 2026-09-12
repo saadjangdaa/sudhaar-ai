@@ -57,6 +57,9 @@ async def create_report(payload: ReportRequest) -> ReportResponse:
         media_type=payload.media_type,
         area_input=payload.area_input,
         language=payload.language,
+        latitude=payload.latitude,
+        longitude=payload.longitude,
+        accuracy_m=payload.accuracy_m,
     )
 
     row = {
@@ -74,6 +77,11 @@ async def create_report(payload: ReportRequest) -> ReportResponse:
         "routing_reason": state.get("routing_reason"),
         "complaint_text": state.get("complaint_text"),
         "language": payload.language,
+        # Optional GPS pin, echoed straight from the request. See
+        # supabase/migrations/005_report_location.sql — these are public columns.
+        "latitude": payload.latitude,
+        "longitude": payload.longitude,
+        "accuracy_m": payload.accuracy_m,
         # validator agent
         "status": state.get("status") or "pending",
         "ai_overview": state.get("ai_overview"),
@@ -117,6 +125,9 @@ async def create_report(payload: ReportRequest) -> ReportResponse:
         validity_confidence=saved.get("validity_confidence") or 0.0,
         rejection_reason=saved.get("rejection_reason"),
         evidence_quality=saved.get("evidence_quality") or "weak",
+        latitude=saved.get("latitude"),
+        longitude=saved.get("longitude"),
+        accuracy_m=saved.get("accuracy_m"),
         area_tag=saved.get("area_tag"),
         # Empty, not 'kmc', when the report was rejected and never routed.
         authority_slug=saved.get("authority_slug") or ("" if rejected else "kmc"),

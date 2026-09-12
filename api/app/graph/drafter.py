@@ -49,6 +49,44 @@ DRAFTER_PROMPT_UR = """آپ کراچی کے سرکاری اداروں کے لی�
 """
 
 
+# A pin this coarse is a neighbourhood, not a location. Above it the coordinates
+# are dropped from the letter rather than sent to a crew as if they were a spot:
+# a browser reporting 3 km of uncertainty is usually reading wifi, not GPS.
+MAX_USEFUL_ACCURACY_M = 500.0
+
+
+def _location_block(state: ReportState) -> str:
+    """The GPS pin as a labelled block appended to the letter, or "".
+
+    Appended deterministically instead of being passed to the model and asked for
+    politely. A mangled coordinate or a broken map URL sends a repair crew to the
+    wrong street, and a model that is told not to invent addresses cannot be
+    relied on to reproduce eleven digits it was handed. The letter's prose is the
+    model's job; the coordinates are not.
+    """
+    lat, lng = state.get("latitude"), state.get("longitude")
+    if lat is None or lng is None:
+        return ""
+
+    accuracy = state.get("accuracy_m")
+    if accuracy is not None and accuracy > MAX_USEFUL_ACCURACY_M:
+        return ""
+
+    pin = f"{lat:.5f}, {lng:.5f}"
+    url = f"https://www.google.com/maps?q={lat:.5f},{lng:.5f}"
+
+    if state.get("language") == "ur":
+        block = f"\n\nمقام: {pin}\nنقشہ: {url}"
+        if accuracy is not None:
+            block += f"\n(تقریباً {round(accuracy)} میٹر کی درستگی کے ساتھ۔)"
+        return block
+
+    block = f"\n\nExact location of the reported issue: {pin}\nMap: {url}"
+    if accuracy is not None:
+        block += f"\n(Reported accurate to about {round(accuracy)} m.)"
+    return block
+
+
 def _fallback_letter(state: ReportState) -> str:
     """Template letter. Used in mock mode and whenever the model call fails."""
     authority = state.get("authority_assigned", "the concerned authority")
@@ -63,7 +101,7 @@ def _fallback_letter(state: ReportState) -> str:
             f"گزارش ہے کہ {summary}۔ اس مسئلے سے علاقے کے رہائشیوں کو شدید دشواری کا "
             f"سامنا ہے۔ براہِ کرم فوری کارروائی کی جائے اور اس شکایت کی رسید و شکایت "
             f"نمبر فراہم کیا جائے۔\n\nشکریہ،\nایک فکرمند شہری"
-        )
+        ) + _location_block(state)
 
     return (
         f"To,\nThe concerned officer\n{authority}\n\n"
@@ -75,7 +113,7 @@ def _fallback_letter(state: ReportState) -> str:
         f"remedial work at the earliest. Kindly acknowledge this complaint and "
         f"provide a complaint reference number.\n\n"
         f"Thank you,\nA concerned resident"
-    )
+    ) + _location_block(state)
 
 
 async def drafter_node(state: ReportState) -> dict:
@@ -103,7 +141,9 @@ async def drafter_node(state: ReportState) -> dict:
             ]
         )
         text = result.content.strip() if isinstance(result.content, str) else ""
-        return {"complaint_text": text or _fallback_letter(state)}
+        if not text:
+            return {"complaint_text": _fallback_letter(state)}
+        return {"complaint_text": text + _location_block(state)}
     except Exception:
         log.warning("drafter failed, using template letter", exc_info=True)
         return {"complaint_text": _fallback_letter(state)}

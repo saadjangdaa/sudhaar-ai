@@ -40,6 +40,17 @@ class AreaMatch(BaseModel):
 
 
 async def router_node(state: ReportState) -> dict:
+    """Free-text area -> area key -> authority.
+
+    state["latitude"]/["longitude"] are deliberately not used here. Routing turns
+    on jurisdiction — a cantonment board owns everything inside its limits and KMC
+    owns nothing there — which is a question about boundaries, and this build has
+    no boundary polygons. Picking the nearest area centroid would quietly hand a
+    Clifton complaint to KMC whenever the pin fell a little the wrong side of a
+    line nobody drew, and a misrouted complaint reads exactly like a working one.
+    The area the citizen typed stays the routing input; the pin is for finding the
+    problem once the right desk has it.
+    """
     area_input = state.get("area_input") or ""
     issue_type = state.get("issue_type", "pothole")
 

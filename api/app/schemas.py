@@ -8,7 +8,7 @@ chat and update all three places in the same commit.
 
 from typing import Literal, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 IssueType = Literal["pothole", "sewage", "garbage", "encroachment", "water"]
 Language = Literal["en", "ur"]
@@ -38,6 +38,32 @@ class ReportRequest(BaseModel):
     )
     language: Language = "en"
 
+    # Optional GPS pin, captured only when the citizen presses the button.
+    # area_input routes the complaint; this is what lets a crew find the thing.
+    latitude: Optional[float] = Field(default=None, ge=-90, le=90)
+    longitude: Optional[float] = Field(default=None, ge=-180, le=180)
+    accuracy_m: Optional[float] = Field(
+        default=None,
+        ge=0,
+        description="Metres of uncertainty as the browser reported it. A 2000 m "
+        "'pin' is a wifi guess and must not be presented as a location.",
+    )
+
+    @model_validator(mode="after")
+    def _drop_half_a_pin(self) -> "ReportRequest":
+        """One coordinate is not a location.
+
+        Dropped rather than rejected with a 422: the pin is an optional extra, and
+        failing the whole complaint over it would lose the citizen's text and photo
+        for the sake of a field they did not have to fill in. The same rule is a
+        CHECK constraint in the database, which is what actually guarantees it.
+        """
+        if self.latitude is None or self.longitude is None:
+            self.latitude = None
+            self.longitude = None
+            self.accuracy_m = None
+        return self
+
 
 class ReportResponse(BaseModel):
     """The stored report, returned to the browser and rendered by ResultCard."""
@@ -62,6 +88,11 @@ class ReportResponse(BaseModel):
     validity_confidence: float = 0.0
     rejection_reason: Optional[str] = None
     evidence_quality: EvidenceQuality = "weak"
+
+    # location, as received
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    accuracy_m: Optional[float] = None
 
     # router
     area_tag: Optional[str] = None

@@ -23,12 +23,22 @@ create table if not exists public.reports (
   transcript          text,
   email_status        text,          -- null | 'sent' | 'failed' | 'skipped'
   authority_slug      text,          -- stable key into public.authorities
-  routing_reason      text           -- why this authority, in one sentence
+  routing_reason      text,          -- why this authority, in one sentence
+  -- Optional GPS pin. PUBLIC, like every other column here — see the note in
+  -- supabase/migrations/005_report_location.sql before relying on it being private.
+  latitude            double precision,
+  longitude           double precision,
+  accuracy_m          double precision,  -- metres; distinguishes a GPS lock from a wifi guess
+  constraint reports_latitude_range  check (latitude  is null or latitude  between -90 and 90),
+  constraint reports_longitude_range check (longitude is null or longitude between -180 and 180),
+  constraint reports_latlng_together check ((latitude is null) = (longitude is null))
 );
 
 create index if not exists reports_upvotes_idx   on public.reports (upvotes desc, created_at desc);
 create index if not exists reports_area_idx      on public.reports (area_tag);
 create index if not exists reports_authority_idx on public.reports (authority_assigned);
+create index if not exists reports_located_idx    on public.reports (latitude, longitude)
+  where latitude is not null;
 
 -- One status column serves two workflows, so all four values live in one place:
 --

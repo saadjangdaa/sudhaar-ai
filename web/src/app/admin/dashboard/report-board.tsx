@@ -19,7 +19,6 @@ import {
 import { Input } from "../_components/ui/input";
 import { Label } from "../_components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../_components/ui/tabs";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../_components/ui/tooltip";
 
 /**
  * The validator agent rejects a report before it ever reaches an authority, and
@@ -111,6 +110,8 @@ function ComplaintCard({ report }: { report: Report }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [fixOpen, setFixOpen] = useState(false);
+  const [redesignOpen, setRedesignOpen] = useState(false);
+  const [redesignState, setRedesignState] = useState<RedesignState>({ status: "idle" });
   const [actionError, setActionError] = useState<string | null>(null);
 
   function onStart() {
@@ -120,6 +121,34 @@ function ComplaintCard({ report }: { report: Report }) {
       if (result.error) setActionError(result.error);
       else router.refresh();
     });
+  }
+
+  async function runRedesign() {
+    setRedesignState({ status: "loading" });
+    try {
+      const response = await fetch("/api/admin/redesign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reportId: report.id }),
+      });
+      const payload = (await response.json()) as {
+        imageDataUrl?: string;
+        solution?: string;
+        error?: string;
+      };
+      if (!response.ok || !payload.imageDataUrl || !payload.solution) {
+        setRedesignState({ status: "error", message: payload.error ?? "AI re-design failed." });
+        return;
+      }
+      setRedesignState({ status: "done", imageDataUrl: payload.imageDataUrl, solution: payload.solution });
+    } catch {
+      setRedesignState({ status: "error", message: "Network error. Try again." });
+    }
+  }
+
+  function onOpenRedesign() {
+    setRedesignOpen(true);
+    if (redesignState.status === "idle") runRedesign();
   }
 
   return (
@@ -161,19 +190,113 @@ function ComplaintCard({ report }: { report: Report }) {
             Mark fixed
           </Button>
         ) : null}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <span>
-              <Button size="sm" variant="outline" disabled>
-                AI Re-design
-              </Button>
-            </span>
-          </TooltipTrigger>
-          <TooltipContent>Coming soon</TooltipContent>
-        </Tooltip>
+        <Button size="sm" variant="outline" onClick={onOpenRedesign}>
+          AI Re-design
+        </Button>
       </CardFooter>
       <MarkFixedDialog report={report} open={fixOpen} onOpenChange={setFixOpen} />
+      <AiRedesignDialog
+        report={report}
+        open={redesignOpen}
+        onOpenChange={setRedesignOpen}
+        state={redesignState}
+        onRetry={runRedesign}
+      />
     </Card>
+  );
+}
+
+type RedesignState =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "error"; message: string }
+  | { status: "done"; imageDataUrl: string; solution: string };
+
+/**
+ * Shows the citizen's photo next to an AI-generated "fixed" version plus a short
+ * recommendation, so the desk can see a plausible resolution before dispatching a
+ * crew. Nothing here is persisted — generation state lives in the parent
+ * ComplaintCard and is kept across opens/closes so reopening the dialog doesn't
+ * re-spend an API call; "Generate"/"Regenerate" is the only thing that does.
+ */
+function AiRedesignDialog({
+  report,
+  open,
+  onOpenChange,
+  state,
+  onRetry,
+}: {
+  report: Report;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  state: RedesignState;
+  onRetry: () => void;
+}) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="w-[min(36rem,calc(100vw-2rem))]">
+        <DialogHeader>
+          <DialogTitle>AI re-design</DialogTitle>
+          <DialogDescription>
+            A generated preview of the fix and a recommended approach for the crew.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col gap-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <p className="admin-meta mb-1">Reported</p>
+              {report.mediaUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={report.mediaUrl}
+                  alt="Reported issue"
+                  className="h-40 w-full rounded-md object-cover"
+                />
+              ) : (
+                <div className="flex h-40 items-center justify-center rounded-md bg-[var(--admin-accent-soft)] text-[var(--admin-muted)]">
+                  <p className="admin-meta">No photo</p>
+                </div>
+              )}
+            </div>
+            <div>
+              <p className="admin-meta mb-1">AI re-design</p>
+              {state.status === "done" ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={state.imageDataUrl}
+                  alt="AI-generated preview of the issue fixed"
+                  className="h-40 w-full rounded-md object-cover"
+                />
+              ) : (
+                <div className="flex h-40 items-center justify-center rounded-md border border-dashed border-[var(--admin-line)] text-center text-[var(--admin-muted)]">
+                  <p className="admin-meta">
+                    {state.status === "loading" ? "Generating…" : "Not generated yet"}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+          {state.status === "error" ? (
+            <p className="rounded-md bg-[var(--admin-danger-soft)] px-3 py-2 text-sm text-[var(--admin-danger)]">
+              {state.message}
+            </p>
+          ) : null}
+          {state.status === "done" ? (
+            <div>
+              <p className="admin-meta mb-1">Recommended fix</p>
+              <p className="text-sm leading-5">{state.solution}</p>
+            </div>
+          ) : null}
+          <Button onClick={onRetry} disabled={state.status === "loading"}>
+            {state.status === "loading"
+              ? "Generating…"
+              : state.status === "done"
+                ? "Regenerate"
+                : "Generate"}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 

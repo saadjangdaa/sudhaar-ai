@@ -24,6 +24,18 @@ export interface ReportRequest {
   /** Free text, e.g. "near Hassan Square, gulshan". The router normalizes it. */
   area_input?: string | null;
   language: Language;
+
+  /**
+   * Optional GPS pin, captured only when the citizen presses "Use my location".
+   * area_input still drives routing — see the note in api/app/graph/router.py —
+   * this is only for a crew to find the exact spot. Sending one coordinate
+   * without the other is pointless; the API drops it rather than rejecting the
+   * whole complaint over it.
+   */
+  latitude?: number | null;
+  longitude?: number | null;
+  /** Metres of uncertainty, straight from the browser's Geolocation API. */
+  accuracy_m?: number | null;
 }
 
 /** POST /api/report response. Also the shape ResultCard renders. */
@@ -46,6 +58,11 @@ export interface ReportResponse {
   validity_confidence: number;
   rejection_reason?: string | null;
   evidence_quality: EvidenceQuality;
+
+  /** location, as received — see ReportRequest above */
+  latitude?: number | null;
+  longitude?: number | null;
+  accuracy_m?: number | null;
 
   area_tag?: string | null;
   authority_slug: string;
@@ -84,6 +101,9 @@ export interface ReportRow {
   validity_confidence: number | null;
   rejection_reason: string | null;
   evidence_quality: EvidenceQuality | null;
+  latitude: number | null;
+  longitude: number | null;
+  accuracy_m: number | null;
   area_tag: string | null;
   authority_slug: string | null;
   authority_assigned: string | null;

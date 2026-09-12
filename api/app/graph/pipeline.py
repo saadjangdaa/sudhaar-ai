@@ -60,6 +60,9 @@ async def run_pipeline(
     media_type: str | None,
     area_input: str | None,
     language: str,
+    latitude: float | None = None,
+    longitude: float | None = None,
+    accuracy_m: float | None = None,
 ) -> ReportState:
     return await pipeline.ainvoke(
         {
@@ -68,5 +71,8 @@ async def run_pipeline(
             "media_type": media_type,
             "area_input": area_input,
             "language": language,
+            "latitude": latitude,
+            "longitude": longitude,
+            "accuracy_m": accuracy_m,
         }
     )
