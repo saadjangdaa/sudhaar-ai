@@ -197,16 +197,22 @@ function ComplaintCard({ report }: { report: Report }) {
             Mark fixed
           </Button>
         ) : null}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <span className="inline-flex">
-              <Button size="sm" variant="outline" disabled>
-                AI Re-design
-              </Button>
-            </span>
-          </TooltipTrigger>
-          <TooltipContent>Coming soon</TooltipContent>
-        </Tooltip>
+        {report.mediaUrl ? (
+          <Button size="sm" variant="outline" onClick={onOpenRedesign}>
+            AI Re-design
+          </Button>
+        ) : (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="inline-flex">
+                <Button size="sm" variant="outline" disabled>
+                  AI Re-design
+                </Button>
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>Needs a photo attached</TooltipContent>
+          </Tooltip>
+        )}
       </CardFooter>
       <MarkFixedDialog report={report} open={fixOpen} onOpenChange={setFixOpen} />
       <AiRedesignDialog
