@@ -13,7 +13,7 @@ cp .env.example .env          # then fill it in
 uvicorn main:app --reload --port 8000
 ```
 
-`MOCK_AGENTS=true` is the default, so it runs with **no OpenAI key at all** — every
+`MOCK_AGENTS=true` is the default, so it runs with **no Gemini key at all** — every
 agent returns canned output in the correct shape. That is what is deployed right
 now, and it is what the frontend is being built against.
 
@@ -66,7 +66,7 @@ app/graph/pipeline.py   ingest -> classifier -> router -> drafter
 app/graph/state.py      shared state
 app/db.py               Supabase, service-role only
 app/mailer.py           Gmail SMTP + the notification hook
-app/transcribe.py       voice notes via OpenAI
+app/transcribe.py       voice notes via Gemini
 ```
 
 Every node has a fallback so a bad model response degrades the report instead of

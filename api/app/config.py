@@ -10,10 +10,14 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    # --- OpenAI (the only model provider in this project) ---
-    openai_api_key: str = ""
-    openai_model: str = "gpt-4o-mini"
-    openai_transcribe_model: str = "gpt-4o-mini-transcribe"
+    # --- Gemini (the only model provider in this project) ---
+    # One model handles text, vision and audio, so there is no separate
+    # transcription model: the ingest node sends the voice note to this one.
+    # flash-lite is the default because the free tier meters requests per day
+    # PER MODEL and gemini-3.6-flash allows only 20 — one report burns four
+    # calls (classify, validate, route, draft), so that is five reports a day.
+    gemini_api_key: str = ""
+    gemini_model: str = "gemini-3.5-flash-lite"
 
     # --- Supabase (service role: bypasses RLS, server-side only, never shipped) ---
     supabase_url: str = ""
@@ -44,6 +48,8 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def apply_env_fallbacks(self) -> "Settings":
+        if not self.gemini_api_key:
+            self.gemini_api_key = os.environ.get("GOOGLE_API_KEY", "")
         if not self.supabase_url:
             self.supabase_url = os.environ.get("NEXT_PUBLIC_SUPABASE_URL", "")
         if not self.supabase_service_role_key:

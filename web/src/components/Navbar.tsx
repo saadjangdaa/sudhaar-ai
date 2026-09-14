@@ -8,7 +8,7 @@ import BrandLogo from "@/components/BrandLogo";
 import { clearUser, getUser, type CitizenUser } from "@/lib/auth";
 
 const LINKS = [
-  { href: "/", label: "Feed" },
+  { href: "/feed", label: "Feed" },
   { href: "/dashboard", label: "Dashboard" },
 ];
 

@@ -16,7 +16,7 @@ Citizen browser  (Next.js)
         │
         ▼
 FastAPI  (api/ or backend/, port 8000)
-  ingest → classifier → router → validator → drafter     [LangGraph + OpenAI]
+  ingest → classifier → router → validator → drafter     [LangGraph + Gemini]
   INSERT public.reports  (service-role key)
         │
         ▼
@@ -82,8 +82,9 @@ Desk workflow:
 1. **Pending** → Start work → `in_progress`
 2. **Mark fixed** → upload proof photo → `POST /api/admin/verify-fix` → status
    becomes `fixed` only when verification returns `verified: true`
-3. **AI Re-design** → `POST /api/admin/redesign` (needs `OPENAI_API_KEY` on the
-   Next server)
+3. **AI Re-design** → `POST /api/admin/redesign` (needs `GEMINI_API_KEY` on the
+   Next server). Drafts a written repair recommendation; there is no generated
+   "after" image, because image generation has no free-tier quota on this key.
 
 Reports with `status = rejected` (validator judged the submission fake) are
 hidden from the public feed **and** from the desk.
@@ -98,7 +99,9 @@ still renders.
 
 - **Frontend:** Next.js 16 (App Router), React 19, TypeScript, Tailwind v4
 - **Auth / data:** Supabase (Postgres, Auth, Storage, RLS)
-- **AI:** OpenAI (`gpt-4o-mini` text/vision, `gpt-4o-mini-transcribe`, `gpt-image-1` for redesign)
+- **AI:** Google Gemini (`gemini-3.5-flash-lite` — one model for text, vision and
+  voice-note transcription). The free tier meters requests per day **per model**,
+  so switching `GEMINI_MODEL` resets your budget; `gemini-3.6-flash` allows only 20/day.
 - **Agents:** LangGraph (classifier → router → validator → drafter; separate verify graph)
 
 ---
@@ -146,7 +149,7 @@ copy .env.example .env          # then fill it in
 python -m uvicorn main:app --reload --port 8000
 ```
 
-`MOCK_AGENTS=true` (default) runs with **no OpenAI key** — every agent returns
+`MOCK_AGENTS=true` (default) runs with **no Gemini key** — every agent returns
 canned output in the contract shape. Set `MOCK_AGENTS=false` once prompts and
 keys are real.
 
@@ -195,9 +198,8 @@ NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
 SUPABASE_SERVICE_ROLE_KEY=
 SUPER_ADMIN_EMAILS=you@example.com
 AI_VERIFY_ENABLED=false
-OPENAI_API_KEY=
-OPENAI_MODEL=gpt-4o-mini
-OPENAI_IMAGE_MODEL=gpt-image-1
+GEMINI_API_KEY=
+GEMINI_MODEL=gemini-3.5-flash-lite
 ```
 
 ```bash
@@ -217,9 +219,8 @@ laptop.
 
 | Variable | Purpose |
 |---|---|
-| `OPENAI_API_KEY` | Required when `MOCK_AGENTS=false` |
-| `OPENAI_MODEL` | Default `gpt-4o-mini` |
-| `OPENAI_TRANSCRIBE_MODEL` | Voice notes |
+| `GEMINI_API_KEY` | Required when `MOCK_AGENTS=false`. Get one at [aistudio.google.com/apikey](https://aistudio.google.com/apikey) |
+| `GEMINI_MODEL` | Default `gemini-3.5-flash-lite`. Same model does text, vision and voice notes |
 | `SUPABASE_URL` | Project URL |
 | `SUPABASE_SERVICE_ROLE_KEY` | Server-only. Bypasses RLS. **Never** `NEXT_PUBLIC_` |
 | `MOCK_AGENTS` | `true` = canned agents, zero API spend |
@@ -232,8 +233,8 @@ laptop.
 
 | Variable | Purpose |
 |---|---|
-| `OPENAI_API_KEY` | Required for live agents |
-| `OPENAI_MODEL` | Default `gpt-4o-mini` |
+| `GEMINI_API_KEY` | Required for live agents |
+| `GEMINI_MODEL` | Default `gemini-3.5-flash-lite` |
 | `NEXT_PUBLIC_SUPABASE_URL` or `SUPABASE_URL` | Project URL |
 | `SUPABASE_SERVICE_ROLE_KEY` | Server-only |
 | `CORS_ORIGINS` | Default `*` |
@@ -249,7 +250,8 @@ laptop.
 | `SUPABASE_SERVICE_ROLE_KEY` | Admin desk + Auth admin API only. Server files only |
 | `SUPER_ADMIN_EMAILS` | Comma-separated allowlist for `/admin/super/approvals` |
 | `AI_VERIFY_ENABLED` | `true` = call vision verify; off = auto-pass so the desk can be tested |
-| `OPENAI_API_KEY` | AI Re-design on the desk |
+| `GEMINI_API_KEY` | AI Re-design on the desk |
+| `GEMINI_MODEL` | Default `gemini-3.5-flash-lite` |
 
 ---
 

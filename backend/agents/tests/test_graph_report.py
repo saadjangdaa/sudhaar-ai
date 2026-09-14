@@ -12,7 +12,7 @@ def test_graph_routes_to_needs_clarification_when_low_confidence(base_civic_stat
         confidence=0.35,
     )
 
-    with patch("agents.classifier.get_openai_client") as mock_get:
+    with patch("agents.classifier.get_gemini_client") as mock_get:
         mock_get.return_value.generate_json.return_value = classifier_out
         result = report_graph.invoke(base_civic_state)
 
@@ -39,9 +39,9 @@ def test_graph_completes_full_pipeline(base_civic_state):
     )
 
     with (
-        patch("agents.classifier.get_openai_client") as mock_cls,
-        patch("agents.router.get_openai_client") as mock_rtr,
-        patch("agents.drafter.get_openai_client") as mock_dft,
+        patch("agents.classifier.get_gemini_client") as mock_cls,
+        patch("agents.router.get_gemini_client") as mock_rtr,
+        patch("agents.drafter.get_gemini_client") as mock_dft,
     ):
         mock_cls.return_value.generate_json.return_value = classifier_out
         mock_rtr.return_value.generate_json.return_value = router_out

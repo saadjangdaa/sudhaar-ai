@@ -1,7 +1,7 @@
 import logging
 
 from schemas.agent_schemas import Verdict, VerificationState, VerifierOutput
-from services.openai_client import get_openai_client
+from services.gemini_client import get_gemini_client
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +41,7 @@ def verify_fix(state: VerificationState) -> VerificationState:
         "The first image is BEFORE. The second image is AFTER."
     )
 
-    raw_result: VerifierOutput = get_openai_client().generate_json(
+    raw_result: VerifierOutput = get_gemini_client().generate_json(
         system_prompt=system_prompt,
         images=[state["before_image_url"], state["after_image_url"]],
         extra_text=extra_text,
@@ -49,7 +49,7 @@ def verify_fix(state: VerificationState) -> VerificationState:
     )
 
     logger.info(
-        "Verifier raw OpenAI response for report %s: verdict=%s confidence=%.2f tamper_flag=%s",
+        "Verifier raw Gemini response for report %s: verdict=%s confidence=%.2f tamper_flag=%s",
         state["report_id"],
         raw_result.verdict.value,
         raw_result.confidence,

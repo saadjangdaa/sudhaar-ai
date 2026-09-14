@@ -7,7 +7,7 @@ export const metadata = { title: "Report an issue — Sudhaar" };
 export default function SubmitPage() {
   return (
     <div className="animate-page-enter page-column px-4 py-6 sm:px-6 sm:py-8">
-      <Link href="/" className="btn btn-ghost !px-0 text-sm">
+      <Link href="/feed" className="btn btn-ghost !px-0 text-sm">
         ← Feed
       </Link>
 

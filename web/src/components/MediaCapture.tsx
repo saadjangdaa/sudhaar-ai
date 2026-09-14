@@ -6,8 +6,8 @@ import { useRef, useState } from "react";
  * Photo picker plus a voice note recorder.
  *
  * MediaRecorder mime types differ per browser (Chrome webm/opus, iOS Safari
- * mp4/m4a), so the real extension is preserved for the upload — OpenAI
- * transcription accepts all of them. Unsupported browsers hide the recorder
+ * mp4/m4a), so the real extension is preserved for the upload — the container
+ * is what tells Gemini how to decode the audio. Unsupported browsers hide the recorder
  * instead of crashing.
  */
 export default function MediaCapture({

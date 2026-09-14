@@ -5,10 +5,9 @@
  *   SUPABASE_SERVICE_ROLE_KEY   super-admin list/approve only
  *   SUPER_ADMIN_EMAILS          comma-separated allowlist
  *   AI_VERIFY_ENABLED           "true" to call the vision stub; default off
- *   OPENAI_API_KEY              powers the "AI Re-design" button (lib/admin/redesign.ts);
+ *   GEMINI_API_KEY              powers the "AI Re-design" button (lib/admin/redesign.ts);
  *                                button fails loudly with a config message when unset
- *   OPENAI_IMAGE_MODEL          default "gpt-image-1"
- *   OPENAI_MODEL                default "gpt-4o-mini", also used for the recommendation text
+ *   GEMINI_MODEL                default "gemini-3.5-flash-lite"
  */
 
 export function isAiVerifyEnabled(): boolean {

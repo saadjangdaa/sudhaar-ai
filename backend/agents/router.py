@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 from schemas.agent_schemas import CivicState, RouterOutput
-from services.openai_client import get_openai_client
+from services.gemini_client import get_gemini_client
 
 AUTHORITIES_PATH = Path(__file__).resolve().parent.parent / "data" / "authorities.json"
 
@@ -61,7 +61,7 @@ def route_issue(state: CivicState) -> CivicState:
         f"Candidate authorities:\n{json.dumps(candidates, indent=2)}"
     )
 
-    result: RouterOutput = get_openai_client().generate_json(
+    result: RouterOutput = get_gemini_client().generate_json(
         system_prompt=ROUTER_SYSTEM_PROMPT,
         images=[],
         extra_text=extra_text,

@@ -38,7 +38,7 @@ async def health() -> dict:
     return {
         "ok": True,
         "mock_agents": settings.mock_agents,
-        "model": settings.openai_model,
+        "model": settings.gemini_model,
         "email_enabled": settings.enable_email,
     }
 

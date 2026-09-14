@@ -17,10 +17,10 @@ services:
       # complaint would pass review regardless of what was in the photo.
       - key: MOCK_AGENTS
         sync: false
-      - key: OPENAI_MODEL
-        value: gpt-4o-mini
+      - key: GEMINI_MODEL
+        value: gemini-3.5-flash-lite
       # set these in the Render dashboard, not here
-      - key: OPENAI_API_KEY
+      - key: GEMINI_API_KEY
         sync: false
       - key: SUPABASE_URL
         sync: false

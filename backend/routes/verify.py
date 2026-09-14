@@ -11,7 +11,7 @@ from schemas.agent_schemas import (
     VerifierOutput,
     Verdict,
 )
-from services.openai_client import OpenAIError
+from services.gemini_client import GeminiError
 from services.supabase_client import get_supabase
 
 logger = logging.getLogger(__name__)
@@ -49,8 +49,8 @@ def verify_fix_endpoint(body: VerifyFixRequest) -> VerifyFixResponse:
 
     try:
         final_state = verify_graph.invoke(initial_state)
-    except OpenAIError as exc:
-        logger.exception("OpenAI pipeline failure during fix verification")
+    except GeminiError as exc:
+        logger.exception("Gemini pipeline failure during fix verification")
         raise HTTPException(status_code=502, detail=str(exc)) from exc
 
     output = VerifierOutput(

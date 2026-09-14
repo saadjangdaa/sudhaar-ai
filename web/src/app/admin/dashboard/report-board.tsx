@@ -138,15 +138,14 @@ function ComplaintCard({ report }: { report: Report }) {
         body: JSON.stringify({ reportId: report.id }),
       });
       const payload = (await response.json()) as {
-        imageDataUrl?: string;
         solution?: string;
         error?: string;
       };
-      if (!response.ok || !payload.imageDataUrl || !payload.solution) {
+      if (!response.ok || !payload.solution) {
         setRedesignState({ status: "error", message: payload.error ?? "AI re-design failed." });
         return;
       }
-      setRedesignState({ status: "done", imageDataUrl: payload.imageDataUrl, solution: payload.solution });
+      setRedesignState({ status: "done", solution: payload.solution });
     } catch {
       setRedesignState({ status: "error", message: "Network error. Try again." });
     }
@@ -216,12 +215,12 @@ type RedesignState =
   | { status: "idle" }
   | { status: "loading" }
   | { status: "error"; message: string }
-  | { status: "done"; imageDataUrl: string; solution: string };
+  | { status: "done"; solution: string };
 
 /**
- * Shows the citizen's photo next to an AI-generated "fixed" version plus a short
- * recommendation, so the desk can see a plausible resolution before dispatching a
- * crew. Nothing here is persisted — generation state lives in the parent
+ * Shows the citizen's photo alongside a short AI recommendation, so the desk knows
+ * what the fix involves before dispatching a crew. Nothing here is persisted —
+ * generation state lives in the parent
  * ComplaintCard and is kept across opens/closes so reopening the dialog doesn't
  * re-spend an API call; "Generate"/"Regenerate" is the only thing that does.
  */
@@ -252,54 +251,36 @@ function AiRedesignDialog({
               AI re-design
             </DialogTitle>
             <DialogDescription className="mt-2 max-w-prose">
-              Compare the reported issue with an AI-generated preview of the fix, plus a crew
-              briefing you can share on site.
+              A crew briefing for the reported issue that you can share on site.
             </DialogDescription>
           </DialogHeader>
         </div>
 
         <div className="admin-dialog-body space-y-4 px-5 py-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <ComparisonPanel label="Before · Reported" tone="muted">
-              {report.mediaUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={report.mediaUrl}
-                  alt="Reported issue"
-                  className="h-52 w-full object-cover"
-                />
-              ) : (
-                <EmptyPhoto label="No citizen photo attached" />
-              )}
-            </ComparisonPanel>
+          <ComparisonPanel label="Reported issue" tone="muted">
+            {report.mediaUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={report.mediaUrl}
+                alt="Reported issue"
+                className="h-52 w-full object-cover"
+              />
+            ) : (
+              <EmptyPhoto label="No citizen photo attached" />
+            )}
+          </ComparisonPanel>
 
-            <ComparisonPanel label="After · AI preview" tone="ai">
-              {state.status === "done" ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={state.imageDataUrl}
-                  alt="AI-generated preview of the issue fixed"
-                  className="h-52 w-full object-cover"
-                />
-              ) : (
-                <div className="admin-dialog-panel-muted flex h-52 flex-col items-center justify-center gap-2 px-4 text-center">
-                  {loading ? (
-                    <>
-                      <span className="size-8 animate-pulse rounded-full bg-[var(--ai-weak,#eeebfb)]" />
-                      <p className="text-sm font-medium text-[var(--foreground,#1c1c1c)]">
-                        Generating preview…
-                      </p>
-                      <p className="text-xs text-[var(--muted,#6b7280)]">
-                        This usually takes a few seconds.
-                      </p>
-                    </>
-                  ) : (
-                    <p className="text-sm text-[var(--muted,#6b7280)]">Preview not generated yet</p>
-                  )}
-                </div>
-              )}
-            </ComparisonPanel>
-          </div>
+          {loading ? (
+            <div className="admin-dialog-panel-muted flex flex-col items-center justify-center gap-2 rounded-lg px-4 py-8 text-center">
+              <span className="size-8 animate-pulse rounded-full bg-[var(--ai-weak,#eeebfb)]" />
+              <p className="text-sm font-medium text-[var(--foreground,#1c1c1c)]">
+                Drafting recommendation…
+              </p>
+              <p className="text-xs text-[var(--muted,#6b7280)]">
+                This usually takes a few seconds.
+              </p>
+            </div>
+          ) : null}
 
           {state.status === "error" ? (
             <p className="rounded-lg border border-[var(--danger,#9b2c2c)]/20 bg-[var(--danger-weak,#fdecec)] px-3 py-2.5 text-sm text-[var(--danger,#9b2c2c)]">

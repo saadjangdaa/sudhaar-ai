@@ -77,7 +77,7 @@ unconditionally.
 ## GET /health
 
 ```json
-{ "ok": true, "mock_agents": true, "model": "gpt-4o-mini", "email_enabled": false }
+{ "ok": true, "mock_agents": true, "model": "gemini-3.5-flash-lite", "email_enabled": false }
 ```
 
 Call it on page load to wake the Render dyno, which sleeps after ~15 minutes idle

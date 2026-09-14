@@ -8,7 +8,7 @@ from fastapi import APIRouter, HTTPException
 from agents.graph_report import report_graph
 from routes.reports import CLARIFICATION_MESSAGE
 from schemas.agent_schemas import CivicState, EmailResponse, LegacyReportRequest, LegacyReportResponse
-from services.openai_client import OpenAIError
+from services.gemini_client import GeminiError
 from services.supabase_client import get_supabase
 
 logger = logging.getLogger(__name__)
@@ -47,8 +47,8 @@ def _run_graph(payload: LegacyReportRequest) -> CivicState:
 
     try:
         return report_graph.invoke(initial_state)
-    except OpenAIError as exc:
-        logger.exception("OpenAI pipeline failure during /api/report")
+    except GeminiError as exc:
+        logger.exception("Gemini pipeline failure during /api/report")
         raise HTTPException(status_code=502, detail=str(exc)) from exc
 
 

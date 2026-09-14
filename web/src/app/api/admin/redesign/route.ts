@@ -4,7 +4,7 @@ import { isApprovedAuthorityAdmin } from "@/lib/admin/session";
 import { createAdminRouteClient } from "@/lib/admin/supabase";
 import { redesignReport } from "@/lib/admin/redesign";
 
-// Image generation regularly takes longer than the platform's 10s default.
+// A vision call regularly takes longer than the platform's 10s default.
 export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
@@ -50,5 +50,5 @@ export async function POST(request: NextRequest) {
     return withCookies(NextResponse.json({ error: result.error }, { status: 502 }));
   }
 
-  return withCookies(NextResponse.json({ imageDataUrl: result.imageDataUrl, solution: result.solution }));
+  return withCookies(NextResponse.json({ solution: result.solution }));
 }

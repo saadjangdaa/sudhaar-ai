@@ -18,7 +18,7 @@ logging.basicConfig(
 
 app = FastAPI(
     title="Civic Issue Routing Agent",
-    description="Karachi civic reporting backend with LangGraph multi-agent pipeline (OpenAI)",
+    description="Karachi civic reporting backend with LangGraph multi-agent pipeline (Gemini)",
     version="1.0.0",
 )
 

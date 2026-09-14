@@ -11,27 +11,21 @@ from schemas.agent_schemas import (
     Verdict,
     VerifierOutput,
 )
-from services import openai_client
+from services import gemini_client
 
 
 @pytest.fixture(autouse=True)
-def reset_openai_client():
-    openai_client.set_openai_client(None)
+def reset_gemini_client():
+    gemini_client.set_gemini_client(None)
     yield
-    openai_client.set_openai_client(None)
+    gemini_client.set_gemini_client(None)
 
 
 @pytest.fixture
-def mock_openai():
+def mock_gemini():
     client = MagicMock()
-    openai_client.set_openai_client(client)
+    gemini_client.set_gemini_client(client)
     return client
-
-
-# Backward-compatible alias used by existing tests
-@pytest.fixture
-def mock_gemini(mock_openai):
-    return mock_openai
 
 
 @pytest.fixture

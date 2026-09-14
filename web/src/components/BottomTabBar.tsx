@@ -5,14 +5,14 @@ import { usePathname } from "next/navigation";
 
 const TABS = [
   {
-    href: "/",
+    href: "/feed",
     label: "Feed",
     icon: (active: boolean) => (
       <svg viewBox="0 0 24 24" fill={active ? "currentColor" : "none"} strokeWidth={1.75} stroke="currentColor" className="h-6 w-6">
         <path strokeLinecap="round" strokeLinejoin="round" d="M3 9.75L12 3l9 6.75V21a.75.75 0 01-.75.75H15.75v-5.25H8.25V21.75H3.75A.75.75 0 013 21V9.75z" />
       </svg>
     ),
-    matchFn: (p: string) => p === "/",
+    matchFn: (p: string) => p === "/feed",
   },
   {
     href: "/submit",

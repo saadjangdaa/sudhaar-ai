@@ -50,7 +50,7 @@ function RejectedCard({ report }: { report: ReportResponse }) {
         <Link href={`/c/${report.id}`} className="btn btn-outline">
           View decision
         </Link>
-        <Link href="/" className="btn btn-ghost">
+        <Link href="/feed" className="btn btn-ghost">
           Back to feed
         </Link>
       </div>
@@ -135,7 +135,7 @@ export default function ResultCard({ report }: { report: ReportResponse }) {
         <Link href={`/c/${report.id}`} className="btn btn-outline">
           View post
         </Link>
-        <Link href="/" className="btn btn-ghost">
+        <Link href="/feed" className="btn btn-ghost">
           Back to feed
         </Link>
       </div>
