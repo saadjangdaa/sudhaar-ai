@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import AiOverview from "@/components/AiOverview";
 import VoteBox from "@/components/VoteBox";
-import { areaLabel, ISSUE_META, STATUS_META, timeAgo } from "@/lib/format";
+import { areaLabel, isPhotoUrl, ISSUE_META, STATUS_META, timeAgo } from "@/lib/format";
 import type { ReportRow } from "@/lib/types";
 
 export default function ReportCard({
@@ -17,7 +17,7 @@ export default function ReportCard({
   const meta = report.issue_type ? ISSUE_META[report.issue_type] : null;
   const title = report.summary || report.raw_text || "Untitled report";
   const status = STATUS_META[report.status ?? "pending"];
-  const hasPhoto = !!report.media_url && report.media_type === "photo";
+  const hasPhoto = isPhotoUrl(report.media_url, report.media_type);
 
   return (
     <article className="feed-card group">

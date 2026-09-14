@@ -1,5 +1,23 @@
 import { AREA_LABELS, type IssueType, type ReportStatus } from "@/lib/types";
 
+/**
+ * Whether a report's media_url should render as an image.
+ *
+ * media_type is meant to say "photo" or "audio", but a handful of live rows
+ * have a real image URL with media_type left null — rows inserted by hand
+ * while testing, or anything written before this column was populated
+ * consistently. Trusting media_type alone made those rows show the feed's
+ * "No photo" placeholder even though the photo was sitting right there at
+ * the URL. Mirrors the same fallback the authority desk already uses in
+ * web/src/lib/admin/supabase-repo.ts, so the two surfaces agree on one row.
+ */
+export function isPhotoUrl(url: string | null | undefined, mediaType: string | null | undefined): url is string {
+  if (!url) return false;
+  if (mediaType === "audio") return false;
+  if (mediaType === "photo") return true;
+  return !/\.(mp3|m4a|wav|ogg|webm)(\?|$)/i.test(url);
+}
+
 export const ISSUE_META: Record<IssueType, { label: string; icon: string; tone: string }> = {
   pothole: { label: "Pothole", icon: "🕳️", tone: "bg-violet-500/15 text-violet-400" },
   sewage: { label: "Sewage", icon: "🚱", tone: "bg-lime-600/15 text-lime-700 dark:text-lime-300" },

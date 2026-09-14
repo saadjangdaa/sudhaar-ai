@@ -5,7 +5,7 @@ import AiOverview from "@/components/AiOverview";
 import CommentThread from "@/components/CommentThread";
 import ComplaintLetter from "@/components/ComplaintLetter";
 import VoteBox from "@/components/VoteBox";
-import { areaLabel, ISSUE_META, STATUS_META, timeAgo } from "@/lib/format";
+import { areaLabel, isPhotoUrl, ISSUE_META, STATUS_META, timeAgo } from "@/lib/format";
 import { getComments } from "@/lib/comments";
 import { getReport } from "@/lib/reports";
 
@@ -25,7 +25,7 @@ export default async function ComplaintPage({ params }: PageProps<"/c/[id]">) {
   const body = rejected
     ? ""
     : report.complaint_text || report.raw_text || report.transcript || "";
-  const hasPhoto = !!report.media_url && report.media_type === "photo";
+  const hasPhoto = isPhotoUrl(report.media_url, report.media_type);
 
   return (
     <div className="animate-page-enter page-column px-4 py-6 sm:px-6 sm:py-8">
