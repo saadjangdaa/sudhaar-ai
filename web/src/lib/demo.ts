@@ -13,8 +13,9 @@ export const DEMO_REPORTS: ReportRow[] = [
   {
     id: "demo-1",
     created_at: minutesAgo(24),
-    media_url: null,
-    media_type: null,
+    media_url:
+      "https://kalojauzdwznxlzcjxzt.supabase.co/storage/v1/object/public/report-media/1e4500bd-58e8-447e-b9b0-5eccc6d1aa77.jpg",
+    media_type: "photo",
     raw_text: "Huge pothole outside my gate, water collects in it every night.",
     transcript: null,
     issue_type: "pothole",
@@ -41,8 +42,9 @@ export const DEMO_REPORTS: ReportRow[] = [
   {
     id: "demo-2",
     created_at: minutesAgo(95),
-    media_url: null,
-    media_type: null,
+    media_url:
+      "https://kalojauzdwznxlzcjxzt.supabase.co/storage/v1/object/public/report-media/1e4500bd-58e8-447e-b9b0-5eccc6d1aa77.jpg",
+    media_type: "photo",
     raw_text: "Sewage overflowing near the main market for three days.",
     transcript: null,
     issue_type: "sewage",
@@ -69,8 +71,9 @@ export const DEMO_REPORTS: ReportRow[] = [
   {
     id: "demo-3",
     created_at: minutesAgo(180),
-    media_url: null,
-    media_type: null,
+    media_url:
+      "https://kalojauzdwznxlzcjxzt.supabase.co/storage/v1/object/public/report-media/1e4500bd-58e8-447e-b9b0-5eccc6d1aa77.jpg",
+    media_type: "photo",
     raw_text: "کچرے کا ڈھیر ہفتے سے نہیں اٹھایا گیا",
     transcript: null,
     issue_type: "garbage",
@@ -97,8 +100,9 @@ export const DEMO_REPORTS: ReportRow[] = [
   {
     id: "demo-4",
     created_at: minutesAgo(260),
-    media_url: null,
-    media_type: null,
+    media_url:
+      "https://kalojauzdwznxlzcjxzt.supabase.co/storage/v1/object/public/report-media/1e4500bd-58e8-447e-b9b0-5eccc6d1aa77.jpg",
+    media_type: "photo",
     raw_text: "Shops have taken over the entire footpath, no space to walk.",
     transcript: null,
     issue_type: "encroachment",
@@ -125,8 +129,9 @@ export const DEMO_REPORTS: ReportRow[] = [
   {
     id: "demo-5",
     created_at: minutesAgo(420),
-    media_url: null,
-    media_type: null,
+    media_url:
+      "https://kalojauzdwznxlzcjxzt.supabase.co/storage/v1/object/public/report-media/1e4500bd-58e8-447e-b9b0-5eccc6d1aa77.jpg",
+    media_type: "photo",
     raw_text: "No water supply in our lane since Monday.",
     transcript: null,
     issue_type: "water",
@@ -153,8 +158,9 @@ export const DEMO_REPORTS: ReportRow[] = [
   {
     id: "demo-6",
     created_at: minutesAgo(600),
-    media_url: null,
-    media_type: null,
+    media_url:
+      "https://kalojauzdwznxlzcjxzt.supabase.co/storage/v1/object/public/report-media/1e4500bd-58e8-447e-b9b0-5eccc6d1aa77.jpg",
+    media_type: "photo",
     raw_text: "Broken road near the flyover, dust everywhere.",
     transcript: null,
     issue_type: "pothole",
